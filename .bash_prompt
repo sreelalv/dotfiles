@@ -1,0 +1,171 @@
+#!/bin/bash
+
+__prompt__(){
+
+
+	if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
+        TERM='gnome-256color'
+    elif infocmp xterm-256color >/dev/null 2>&1; then
+        TERM='xterm-256color'
+    fi
+
+
+	# Highlight the user name when logged in as root.
+   	if [[ "${USER}" == "root" ]]; then
+       	PROMPT_USER="${TX3} ROOT "
+   	else
+       	PROMPT_USER=""
+   	fi
+
+
+    ps1(){
+
+        # Check exit status of last executed process, the prompt the prompt accordingly
+        if [ "$?" -eq 0 ]; then
+            local PROMPT_RESULT="${TX1} ➤ "
+        else
+            local PROMPT_RESULT="${TX2} → "
+        fi
+    
+        PS1="${PROMPT_USER}"
+        PS1+="${PROMPT_RESULT}"
+        PS1+="${P_IN} "
+    }
+    
+    PROMPT_COMMAND=ps1
+
+    PS2="${PS2_COLOR} ➤${P_IN} "
+}
+
+
+format_font(){
+        
+        local output=$1
+        local F=$FG
+        local B=$BG
+        local E
+
+       
+        case $# in
+                2)
+						[ $2 = $FG_DEFAULT ] && F=""
+                        eval $output="'\[\e[0${F}${2}m\]'"
+                        ;;
+                3)
+						[ $2 = $DEFAULT ] && E="" || E=$2
+						[ $3 = $FG_DEFAULT ] && F=""
+                        eval $output="'\[\e[0${E}${F}${3}m\]'"
+                        ;;
+                4)
+						[ $2 = $DEFAULT ] && E="" || E=$2
+						[ $3 = $FG_DEFAULT ] && F=""
+						[ $4 = $BG_DEFAULT ] && B=""
+
+                        eval $output="'\[\e[0${E}${F}${3}${B}${4}m\]'"
+                        ;;
+                *)
+                        output="'\[\e[0m\]'"
+                        ;;
+        esac
+
+}
+
+
+__customize_prompt__(){
+
+
+        ############################################################################
+        ##                          COLOR CODES                                   ##
+        ############################################################################
+
+
+                
+        ## FONT EFFECT
+        local      BOLD=";1"
+        local       DIM=";2"
+        local UNDERLINE=";4"
+        local     BLINK=";5"
+        local    INVERT=";7"
+        local    HIDDEN=";8"
+
+        ##DEFAULTS
+		local	FG_DEFAULT=";39"
+        local   BG_DEFAULT=";49"
+        local	   DEFAULT="0"
+
+
+        ## COLORS, 256 COLOR SHEETS BASED
+        local     BLACK=";1"
+        local     WHITE=";15"
+        local       RED=";160"
+        local     GREEN=";46"
+        local    YELLOW=";184"
+        local      BLUE=";20"
+        local    L_BLUE=";32"
+        local   MAGENTA=";5"
+        local      CYAN=";14"
+        local    ORANGE=";166"
+        local      LIME=";10"
+        local      GRAY=";235"
+        local      PINK=";201"
+        
+        ## TYPE
+        local       RE="\[\e[0m\]" #RESET
+        local     NONE=""
+        local       FG=";38;5"   #FOREGROUND TEXT COLOR
+        local       BG=";48;5"  #BACKGROUND TEXT COLOR
+
+
+        ##################################################################################################
+        ##                                                                                              ##
+        ##                          >>>>>>>>>>EDIT YOUR PROMPT HERE<<<<<<<<<<                           ##
+        ##                                                                                              ##
+        ##################################################################################################
+
+
+        #INPUT FORMAT
+        P_IN=$RE
+
+
+
+        # SUCCESS PROMPT
+        local FC1=$WHITE        #FONT_COLOR_1
+        local BG1=$L_BLUE       #BACKGROUND_1
+        local TE1=$DEFAULT         #TEXTEFFECT_1
+        format_font TX1 $TE1 $FC1 $BG1       #TEXT_FORMAT_1
+        export TX1
+
+        # FAILED PROMPT
+        local FC2=$WHITE        #FONT_COLOR_2
+        local BG2=$RED          #BACKGROUND_2
+        local TE2=$BOLD         #TEXTEFFECT_2
+        format_font TX2 $TE2 $FC2 $BG2      #TEXT_FORMAT_2
+        export TX2
+
+        # ROOT LOGIN PROMPT
+        local FC3=$WHITE        #FONT_COLOR_3
+        local BG3=$RED         #BACKGROUND_3
+        local TE3=$BOLD         #TEXTEFFECT_3
+        format_font TX3 $TE3 $FC3 $BG3      #TEXT_FORMAT_3
+        export TX3
+        
+
+        ## PS2
+        local FCX=$YELLOW      #FONT_COLOR_PS2
+        local BGX=$BG_DEFAULT         #BACKGROUND_PS2
+        local TEX=$DEFAULT         #TEXTEFFECT_PS2
+        format_font PS2_COLOR $TEX $FCX $BGX    #TEXT_FORMAT_PS2
+        export PS2_COLOR
+
+
+        ##################################################################################################
+        ##                                          END                                                 ##
+        ##################################################################################################
+
+
+}
+
+__customize_prompt__
+unset __customize_prompt__
+__prompt__
+unset __prompt__
