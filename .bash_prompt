@@ -146,7 +146,7 @@ __customize_prompt__(){
 
 
         ## COLORS, 256 COLOR SHEETS BASED
-        local     BLACK=";1"
+        local     BLACK=";0"
         local     WHITE=";15"
         local       RED=";160"
         local     GREEN=";46"
@@ -173,45 +173,41 @@ __customize_prompt__(){
         ##                                                                                              ##
         ##################################################################################################
 
+        #SET OVERALL BACKGROUND DEFAULT
+        CONFIG_OVERALL_DEFAULT='YES'   #set [YES/NO] # Recommended 'YES'
+		STABLE_BG=$GRAY
+		STABLE_FG=$WHITE
+
 
         #INPUT FORMAT
-        P_IN=$RE
+        P_IN=$RE 
 
         # SUCCESS PROMPT
-        local FC1=$WHITE        #FONT_COLOR_1
+        local FC1=$BLACK        #FONT_COLOR_1
         local BG1=$L_BLUE       #BACKGROUND_1
-        local TE1=$DEFAULT         #TEXT_EFFECT_1
-        format_font TX1 $TE1 $FC1 $BG1       #TEXT_FORMAT_1
-        export TX1
+        local TE1=$DEFAULT      #TEXT_EFFECT_1
 
         # FAILED PROMPT
         local FC2=$WHITE        #FONT_COLOR_2
         local BG2=$RED          #BACKGROUND_2
         local TE2=$BOLD         #TEXT_EFFECT_2
-        format_font TX2 $TE2 $FC2 $BG2      #TEXT_FORMAT_2
-        export TX2
 
         # ROOT LOGIN PROMPT
         local FC3=$WHITE        #FONT_COLOR_3
-        local BG3=$RED         #BACKGROUND_3
+        local BG3=$RED          #BACKGROUND_3
         local TE3=$BOLD         #TEXT_EFFECT_3
-        format_font TX3 $TE3 $FC3 $BG3      #TEXT_FORMAT_3
-        export TX3
         
         ## PS2
-        local FCX=$YELLOW      #FONT_COLOR_PS2
-        local BGX=$BG_DEFAULT         #BACKGROUND_PS2
-        local TEX=$DEFAULT         #TEX_TEFFECT_PS2
-        format_font PS2_COLOR $TEX $FCX $BGX    #TEXT_FORMAT_PS2
-        export PS2_COLOR
-
+        local FCX=$YELLOW       #FONT_COLOR_PS2
+        local BGX=$BG_DEFAULT   #BACKGROUND_PS2
+        local TEX=$DEFAULT      #TEX_TEFFECT_PS2
 
 
         ###GIT REPO
 
         # STATUS
 		local   EFFECT=$BOLD
-		local BG_COLOR=$L_BLUE
+		local	BG_GIT=$L_BLUE
 
 		local  UNTRACK=$RED
 		local UNSTAGED=$ORANGE
@@ -222,30 +218,44 @@ __customize_prompt__(){
 		local FC_BR=$WHITE		#FONT_COLOR_BRANCH
 		local BG_BR=$L_BLUE		#BACKGROUND_COLOR_BRANCH
 		local TE_BR=$BOLD 		#TEXT_EFFECTT_BRANCH
-		format_font BRANCH_COLOR $TE_BR $FC_BR $BG_BR 
-		export BRANCH_COLOR
-
-
-		format_font UNT $EFFECT $UNTRACK $BG_COLOR
-		export UNT
-		format_font UNS $EFFECT $UNSTAGED $BG_COLOR
-		export UNS
-		format_font STH $EFFECT $STASH $BG_COLOR
-		export STH
-		format_font STG $EFFECT $STAGED $BG_COLOR
-		export STG
-		format_font UNX $EFFECT $MAGENTA $BG_COLOR
-		export UNX
-
-
-
-
 
 
 
         ##################################################################################################
         ##                                          END                                                 ##
         ##################################################################################################
+
+
+		if [ $CONFIG_OVERALL_DEFAULT = 'YES' ]; then
+			local    BG1=$STABLE_BG
+			local BG_GIT=$STABLE_BG
+			local  BG_BR=$STABLE_BG
+			local    FC1=$STABLE_FG
+			local  FC_BR=$STABLE_FG
+		fi
+
+        format_font TX1 $TE1 $FC1 $BG1 					#TEXT_FORMAT_1
+        export TX1
+        format_font TX2 $TE2 $FC2 $BG2      			#TEXT_FORMAT_2
+        export TX2
+        format_font TX3 $TE3 $FC3 $BG3      			#TEXT_FORMAT_3
+        export TX3
+        format_font PS2_COLOR $TEX $FCX $BGX    		#TEXT_FORMAT_PS2
+        export PS2_COLOR
+		format_font BRANCH_COLOR $TE_BR $FC_BR $BG_BR 	#BRANCH_COLOR
+		export BRANCH_COLOR
+		format_font UNT $EFFECT $UNTRACK $BG_GIT
+		export UNT
+		format_font UNS $EFFECT $UNSTAGED $BG_GIT
+		export UNS
+		format_font STH $EFFECT $STASH $BG_GIT
+		export STH
+		format_font STG $EFFECT $STAGED $BG_GIT
+		export STG
+		format_font UNX $EFFECT $MAGENTA $BG_GIT
+		export UNX
+
+
 
 
 }
