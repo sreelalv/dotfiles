@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+install() {
+
+	[ -f ~/.bashrc ] && mv ~/.bashrc ~/.bashrc.default
+	[ -d ~/.dotfiles ] || mkdir ~/.dotfiles
+	cp .bashrc ~/.bashrc
+	cp bash_prompt ~/.dotfiles/
+	touch ~/.dotfiles/bash_aliases
+	[ "$1" = "--add-alias" ] && cat bash_aliases >> ~/.dotfiles/bash_aliases
+}
+
+
+if [ "$1" == "-y" -o "$1" == "-f" -o "$1" == "--force" ]; then
+	install	
+elif [ "$1" == "--add-alias" ]; then 
+	install $1
+else
+	read -p "This may overwrite  existing files in your home directory. Are you sure? (y/n) " -n 1; 
+	echo ""
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		install
+	fi
+fi
+unset install

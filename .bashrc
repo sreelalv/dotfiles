@@ -45,5 +45,8 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 
-#Source custom prompt , if file exits
-[ -f ~/.dotfiles/.bash_prompt ] && source ~/.dotfiles/.bash_prompt 	
+for file in ~/.dotfiles/{bash_prompt,bash_aliases}
+do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file"
+done
+unset file
