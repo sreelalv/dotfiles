@@ -10,6 +10,56 @@ __prompt__(){
     fi
 
 
+	prompt_git() {
+        local s=''
+        local branchName=''
+
+        # Check if the current directory is in a Git repository.
+        git rev-parse --is-inside-work-tree &>/dev/null || return
+
+        # Check for what branch we’re on.
+        # Get the short symbolic ref. If HEAD isn’t a symbolic ref, get a
+        # tracking remote branch or tag. Otherwise, get the
+        # short SHA for the latest commit, or give up.
+        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+            git describe --all --exact-match HEAD 2> /dev/null || \
+            git rev-parse --short HEAD 2> /dev/null || \
+            echo '(unknown)')"
+
+        # Early exit for Chromium & Blink repo, as the dirty check takes too long.
+        repoUrl="$(git config --get remote.origin.url)"
+        if grep -q 'chromium/src.git' <<< "${repoUrl}"; then
+            s+="${UNX}●"
+        else
+        	# Check for untracked files.
+            if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+                s+="${UNT}●"
+            fi
+            # Check for unstaged changes.
+            if ! $(git diff-files --quiet --ignore-submodules --); then
+                s+="${UNS}●"
+            fi
+            # Check for stashed files.
+            if $(git rev-parse --verify refs/stash &>/dev/null); then
+                s+="${STH}●"
+            fi
+            # Check for uncommitted changes in the index.
+            if ! $(git diff --quiet --ignore-submodules --cached); then
+                s+="${STG}●"
+            fi
+        fi
+
+        [ -n "${s}" ] && details="${s} "
+   
+        branch="${BRANCH_COLOR} ${branchName} "
+
+
+        final_git_details="${branch}${details}"
+        echo -e "${final_git_details}"
+    }
+
+
+
 	# Highlight the user name when logged in as root.
    	if [[ "${USER}" == "root" ]]; then
        	PROMPT_USER="${TX3} ROOT "
@@ -28,6 +78,7 @@ __prompt__(){
         fi
     
         PS1="${PROMPT_USER}"
+        PS1+="$(prompt_git)"
         PS1+="${PROMPT_RESULT}"
         PS1+="${P_IN} "
     }
@@ -126,36 +177,70 @@ __customize_prompt__(){
         #INPUT FORMAT
         P_IN=$RE
 
-
-
         # SUCCESS PROMPT
         local FC1=$WHITE        #FONT_COLOR_1
         local BG1=$L_BLUE       #BACKGROUND_1
-        local TE1=$DEFAULT         #TEXTEFFECT_1
+        local TE1=$DEFAULT         #TEXT_EFFECT_1
         format_font TX1 $TE1 $FC1 $BG1       #TEXT_FORMAT_1
         export TX1
 
         # FAILED PROMPT
         local FC2=$WHITE        #FONT_COLOR_2
         local BG2=$RED          #BACKGROUND_2
-        local TE2=$BOLD         #TEXTEFFECT_2
+        local TE2=$BOLD         #TEXT_EFFECT_2
         format_font TX2 $TE2 $FC2 $BG2      #TEXT_FORMAT_2
         export TX2
 
         # ROOT LOGIN PROMPT
         local FC3=$WHITE        #FONT_COLOR_3
         local BG3=$RED         #BACKGROUND_3
-        local TE3=$BOLD         #TEXTEFFECT_3
+        local TE3=$BOLD         #TEXT_EFFECT_3
         format_font TX3 $TE3 $FC3 $BG3      #TEXT_FORMAT_3
         export TX3
         
-
         ## PS2
         local FCX=$YELLOW      #FONT_COLOR_PS2
         local BGX=$BG_DEFAULT         #BACKGROUND_PS2
-        local TEX=$DEFAULT         #TEXTEFFECT_PS2
+        local TEX=$DEFAULT         #TEX_TEFFECT_PS2
         format_font PS2_COLOR $TEX $FCX $BGX    #TEXT_FORMAT_PS2
         export PS2_COLOR
+
+
+
+        ###GIT REPO
+
+        # STATUS
+		local   EFFECT=$BOLD
+		local BG_COLOR=$L_BLUE
+
+		local  UNTRACK=$RED
+		local UNSTAGED=$ORANGE
+		local    STASH=$PINK
+		local   STAGED=$GREEN
+
+		## BRANCH 
+		local FC_BR=$WHITE		#FONT_COLOR_BRANCH
+		local BG_BR=$L_BLUE		#BACKGROUND_COLOR_BRANCH
+		local TE_BR=$BOLD 		#TEXT_EFFECTT_BRANCH
+		format_font BRANCH_COLOR $TE_BR $FC_BR $BG_BR 
+		export BRANCH_COLOR
+
+
+		format_font UNT $EFFECT $UNTRACK $BG_COLOR
+		export UNT
+		format_font UNS $EFFECT $UNSTAGED $BG_COLOR
+		export UNS
+		format_font STH $EFFECT $STASH $BG_COLOR
+		export STH
+		format_font STG $EFFECT $STAGED $BG_COLOR
+		export STG
+		format_font UNX $EFFECT $MAGENTA $BG_COLOR
+		export UNX
+
+
+
+
+
 
 
         ##################################################################################################
