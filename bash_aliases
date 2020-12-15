@@ -17,3 +17,8 @@ alias usb='cd /media/${USER}/ 2>/dev/null && la' #show installed drives
 
 #Navigate to Phone storage
 alias phone='cd /run/user/1000/gvfs/*/ 2>/dev/null && la' 
+
+#Navigate Directly from Home 
+cdd(){ 
+	cd ; cd $1
+}
