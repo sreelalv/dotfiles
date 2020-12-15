@@ -49,12 +49,12 @@ __prompt__(){
             fi
         fi
 
-        [ -n "${s}" ] && details="${s} "
+        [ -n "${s}" ] && details=" ${s}"
    
-        branch="${BRANCH_COLOR} ${branchName} "
+        branch="${BRANCH_COLOR}${branchName}"
 
 
-        final_git_details="${branch}${details}"
+        final_git_details="\[\e[0;37m\](${branch}\[\e[0;37m\])${details}"
         echo -e "${final_git_details}"
     }
 
@@ -72,14 +72,16 @@ __prompt__(){
 
         # Check exit status of last executed process, the prompt the prompt accordingly
         if [ "$?" -eq 0 ]; then
-            local PROMPT_RESULT="${TX1} ➤ "
+            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL} "
         else
-            local PROMPT_RESULT="${TX2} → "
+            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL} "
         fi
-    
-        PS1="${PROMPT_USER}"
-        PS1+="$(prompt_git)"
+    	
+    	PS1="\n"
+        PS1+="${PROMPT_USER}"
         PS1+="${PROMPT_RESULT}"
+        PS1+="${TX4}\W"
+        PS1+="$(prompt_git)"
         PS1+="${P_IN} "
     }
     
@@ -150,6 +152,7 @@ __customize_prompt__(){
         local     WHITE=";15"
         local       RED=";160"
         local     GREEN=";46"
+        local	D_GREEN=";22"
         local    YELLOW=";184"
         local      BLUE=";20"
         local    L_BLUE=";32"
@@ -174,36 +177,48 @@ __customize_prompt__(){
         ##################################################################################################
 
         #SET OVERALL BACKGROUND DEFAULT
-        CONFIG_OVERALL_DEFAULT='YES'   #set [YES/NO] # Recommended 'YES'
-		STABLE_BG=$GRAY
-		STABLE_FG=$WHITE
+        SET_DEFAULT_BG='YES'   #set [YES/NO] #Recommended 'YES' for a neat prompt, Also try using 'NO' different varieties for styles
+		SET_DEFAULT_FG='NO'		#NOT Recommeded # Feel free to use different Forground Colours and 
+		STABLE_BG=$BG_DEFAULT
+		STABLE_FG=$FG_DEFAULT
 
 
         #INPUT FORMAT
         P_IN=$RE 
+#        PROMPT_SYMBOL="→"
+        PROMPT_SYMBOL="▶"
 
         # SUCCESS PROMPT
-        local FC1=$BLACK        #FONT_COLOR_1
-        local BG1=$L_BLUE       #BACKGROUND_1
-        local TE1=$DEFAULT      #TEXT_EFFECT_1
+        #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status =0 )
+        local FC1=$GREEN        			#FONT_COLOR_1
+        local BG1=$L_BLUE       			#BACKGROUND_1
+        local TE1=$BOLD      				#TEXT_EFFECT_1
 
         # FAILED PROMPT
-        local FC2=$WHITE        #FONT_COLOR_2
-        local BG2=$RED          #BACKGROUND_2
-        local TE2=$BOLD         #TEXT_EFFECT_2
+        #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status !=0 )
+        local FC2=$RED   					#FONT_COLOR_2
+        local BG2=$BG_DEFAULT 				#BACKGROUND_2
+        local TE2=$BOLD         			#TEXT_EFFECT_2
+
 
         # ROOT LOGIN PROMPT
-        local FC3=$WHITE        #FONT_COLOR_3
-        local BG3=$RED          #BACKGROUND_3
-        local TE3=$BOLD         #TEXT_EFFECT_3
+        local FC3=$RED 						#FONT_COLOR_3
+        local BG3=$BG_DEFAULT   			#BACKGROUND_3
+        local TE3=$BOLD         			#TEXT_EFFECT_3
+
+
+        #Working Directory 
+        local FC4=$D_GREEN					#FONT_COLOR_4
+        local BG4=$BG_DEFAULT				#BACKGROUND_4
+        local TE4=$BOLD 					#TEXT_EFFECT_4
         
         ## PS2
-        local FCX=$YELLOW       #FONT_COLOR_PS2
-        local BGX=$BG_DEFAULT   #BACKGROUND_PS2
-        local TEX=$DEFAULT      #TEX_TEFFECT_PS2
+        local FCX=$YELLOW       			#FONT_COLOR_PS2
+        local BGX=$BG_DEFAULT   			#BACKGROUND_PS2
+        local TEX=$DEFAULT      			#TEX_TEFFECT_PS2
 
 
-        ###GIT REPO
+        ###GIT REPOSITORY FORMAT STYLE
 
         # STATUS
 		local   EFFECT=$BOLD
@@ -215,9 +230,9 @@ __customize_prompt__(){
 		local   STAGED=$GREEN
 
 		## BRANCH 
-		local FC_BR=$WHITE		#FONT_COLOR_BRANCH
-		local BG_BR=$L_BLUE		#BACKGROUND_COLOR_BRANCH
-		local TE_BR=$BOLD 		#TEXT_EFFECTT_BRANCH
+		local FC_BR=$CYAN					#FONT_COLOR_BRANCH
+		local BG_BR=$L_BLUE					#BACKGROUND_COLOR_BRANCH
+		local TE_BR=$BOLD					#TEXT_EFFECTT_BRANCH
 
 
 
@@ -226,12 +241,23 @@ __customize_prompt__(){
         ##################################################################################################
 
 
-		if [ $CONFIG_OVERALL_DEFAULT = 'YES' ]; then
+		if [ $SET_DEFAULT_BG = 'YES' ]; then
 			local    BG1=$STABLE_BG
+			local    BG2=$STABLE_BG
+			local    BG3=$STABLE_BG
+			local    BG4=$STABLE_BG
+			local	 BGX=$STABLE_BG
 			local BG_GIT=$STABLE_BG
 			local  BG_BR=$STABLE_BG
-			local    FC1=$STABLE_FG
-			local  FC_BR=$STABLE_FG
+		fi
+		if [ $SET_DEFAULT_FG = 'YES' ]; then
+			local    FG1=$STABLE_FG
+			local    FG2=$STABLE_FG
+			local    FG3=$STABLE_FG
+			local    FG4=$STABLE_FG
+			local	 FGX=$STABLE_FG
+			local FG_GIT=$STABLE_FG
+			local  FG_BR=$STABLE_FG
 		fi
 
         format_font TX1 $TE1 $FC1 $BG1 					#TEXT_FORMAT_1
@@ -240,6 +266,8 @@ __customize_prompt__(){
         export TX2
         format_font TX3 $TE3 $FC3 $BG3      			#TEXT_FORMAT_3
         export TX3
+		format_font TX4 $TE4 $FC4 $BG4      			#TEXT_FORMAT_4
+        export TX4
         format_font PS2_COLOR $TEX $FCX $BGX    		#TEXT_FORMAT_PS2
         export PS2_COLOR
 		format_font BRANCH_COLOR $TE_BR $FC_BR $BG_BR 	#BRANCH_COLOR
