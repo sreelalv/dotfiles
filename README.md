@@ -11,7 +11,7 @@ The install script creates a backup of your existing '.bashrc' as '.bashrc.defau
 If something goes wrong, replace the '.bashrc' file with your default '.bashrc' file.
 
 ## About Alias
-* To install the aliases, use '--add-alias' flag with the install  [ ./install --add-alias ]
+* To install the aliases, use '-a' or '--add-alias' flag with the install. [ ./install --add-alias ] [ ./install -a ]
 * Its is not recommeded to use these aliases since they may not properly work on your device.
 
 * You can add your own aliases in '~/.dotfiles/bash_aliases' file
