@@ -54,7 +54,7 @@ __prompt__(){
         branch="${BRANCH_COLOR}${branchName}"
 
 
-        final_git_details="\[\e[0;37m\](${branch}\[\e[0;37m\])${details}"
+        final_git_details=" ${BRK}git:(${branch}${BRK})${details}"
         echo -e "${final_git_details}"
     }
 
@@ -72,9 +72,9 @@ __prompt__(){
 
         # Check exit status of last executed process, the prompt the prompt accordingly
         if [ "$?" -eq 0 ]; then
-            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL} "
+            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL}  "
         else
-            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL} "
+            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL}  "
         fi
     	
     	PS1="\n"
@@ -185,8 +185,8 @@ __customize_prompt__(){
 
         #INPUT FORMAT
         P_IN=$RE 
-#        PROMPT_SYMBOL="→"
-        PROMPT_SYMBOL="▶"
+        PROMPT_SYMBOL="→"
+#        PROMPT_SYMBOL="▶"
 
         # SUCCESS PROMPT
         #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status =0 )
@@ -208,7 +208,7 @@ __customize_prompt__(){
 
 
         #Working Directory 
-        local FC4=$D_GREEN					#FONT_COLOR_4
+        local FC4=$CYAN					#FONT_COLOR_4
         local BG4=$BG_DEFAULT				#BACKGROUND_4
         local TE4=$BOLD 					#TEXT_EFFECT_4
         
@@ -224,15 +224,21 @@ __customize_prompt__(){
 		local   EFFECT=$BOLD
 		local	BG_GIT=$L_BLUE
 
+        ##STATUS
 		local  UNTRACK=$RED
 		local UNSTAGED=$ORANGE
 		local    STASH=$PINK
 		local   STAGED=$GREEN
 
 		## BRANCH 
-		local FC_BR=$CYAN					#FONT_COLOR_BRANCH
+		local FC_BR=$RED					#FONT_COLOR_BRANCH
 		local BG_BR=$L_BLUE					#BACKGROUND_COLOR_BRANCH
 		local TE_BR=$BOLD					#TEXT_EFFECTT_BRANCH
+
+        #git brackets
+        local FCb=$BLUE
+        local BGb=$BG_DEFAULT
+        local TEb=$BOLD
 
 
 
@@ -276,6 +282,12 @@ __customize_prompt__(){
 		export UNT
 		format_font UNS $EFFECT $UNSTAGED $BG_GIT
 		export UNS
+
+
+        format_font BRK $TEb $FCb $BGb
+        export UNS
+
+
 		format_font STH $EFFECT $STASH $BG_GIT
 		export STH
 		format_font STG $EFFECT $STAGED $BG_GIT
