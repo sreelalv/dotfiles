@@ -64,7 +64,7 @@ __prompt__(){
    	if [[ "${USER}" == "root" ]]; then
        	PROMPT_USER="${TX3} ROOT "
    	else
-       	PROMPT_USER=""
+        PROMPT_USER="${USER_NAME}"
    	fi
 
 
@@ -72,16 +72,16 @@ __prompt__(){
 
         # Check exit status of last executed process, the prompt the prompt accordingly
         if [ "$?" -eq 0 ]; then
-            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL}  "
+            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL} "
         else
-            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL}  "
+            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL} "
         fi
     	
     	PS1="\n"
-        PS1+="${PROMPT_USER}"
-        PS1+="${PROMPT_RESULT}"
-        PS1+="${TX4}\W"
-        PS1+="$(prompt_git)"
+        PS1+="${PROMPT_USER}${P_IN}"
+        PS1+="${PROMPT_RESULT}${P_IN} "
+        PS1+="${TX4}\W${P_N}"
+        PS1+="$(prompt_git)${P_N}"
         PS1+="${P_IN} "
     }
     
@@ -177,16 +177,22 @@ __customize_prompt__(){
         ##################################################################################################
 
         #SET OVERALL BACKGROUND DEFAULT
-        SET_DEFAULT_BG='YES'   #set [YES/NO] #Recommended 'YES' for a neat prompt, Also try using 'NO' different varieties for styles
+        SET_DEFAULT_BG='NO'   #set [YES/NO] #Recommended 'YES' for a neat prompt, Also try 'NO' for different varieties of styles
 		SET_DEFAULT_FG='NO'		#NOT Recommeded # Feel free to use different Forground Colours and 
 		STABLE_BG=$BG_DEFAULT
 		STABLE_FG=$FG_DEFAULT
 
 
         #INPUT FORMAT
-        P_IN=$RE 
+        P_IN=$RE                #Set default font color to terminal
         PROMPT_SYMBOL="→"
 #        PROMPT_SYMBOL="▶"
+
+        #To add username
+        local USR_NAME=""   #Enter username to add username to the prompt
+        local USR_F=$WHITE
+        local USR_B=$L_BLUE
+        local USR_T=$BOLD
 
         # SUCCESS PROMPT
         #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status =0 )
@@ -196,8 +202,8 @@ __customize_prompt__(){
 
         # FAILED PROMPT
         #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status !=0 )
-        local FC2=$RED   					#FONT_COLOR_2
-        local BG2=$BG_DEFAULT 				#BACKGROUND_2
+        local FC2=$WHITE   					#FONT_COLOR_2
+        local BG2=$RED 	        			#BACKGROUND_2
         local TE2=$BOLD         			#TEXT_EFFECT_2
 
 
@@ -222,7 +228,7 @@ __customize_prompt__(){
 
         # STATUS
 		local   EFFECT=$BOLD
-		local	BG_GIT=$L_BLUE
+		local	BG_GIT=$BG_DEFAULT
 
         ##STATUS
 		local  UNTRACK=$RED
@@ -232,7 +238,7 @@ __customize_prompt__(){
 
 		## BRANCH 
 		local FC_BR=$RED					#FONT_COLOR_BRANCH
-		local BG_BR=$L_BLUE					#BACKGROUND_COLOR_BRANCH
+		local BG_BR=$BG_DEFAULT					#BACKGROUND_COLOR_BRANCH
 		local TE_BR=$BOLD					#TEXT_EFFECTT_BRANCH
 
         #git brackets
@@ -265,6 +271,12 @@ __customize_prompt__(){
 			local FG_GIT=$STABLE_FG
 			local  FG_BR=$STABLE_FG
 		fi
+
+        if [ -n USR_NAME ]; then
+            format_font USR $USR_T $USR_F $USR_B        #USERNAME_FORMAT
+            USER_NAME="${USR}${USR_NAME}"
+            export USER_NAME
+        fi
 
         format_font TX1 $TE1 $FC1 $BG1 					#TEXT_FORMAT_1
         export TX1
