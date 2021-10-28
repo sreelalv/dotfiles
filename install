@@ -1,26 +1,28 @@
 #!/bin/bash
-
-
 install() {
 
-	[ -f ~/.bashrc ] && mv ~/.bashrc ~/.bashrc.default && echo "Renamed: ~/.bashrc > ~/.bashrc.default"
-	[ -d ~/.dotfiles ] || mkdir ~/.dotfiles && echo "New folder: ~/.dotfiles"
-	touch ~/.dotfiles/bash_aliases && echo "New File: ~/.dotfiles/bash_aliases"
-	cp .bashrc ~/.bashrc && echo "copied: .bashrc >> ~/.bashrc"
-	cp bash_prompt ~/.dotfiles/ && echo "copied: bash_prompt >> ~/.dotfiles/bash_prompt"
-	[ "$1" = 1 ] && cat bash_aliases >> ~/.dotfiles/bash_aliases && \
-		echo "Appended: bash_aliases >>> ~/.dotfiles/bash_aliases"
+	[[ ! -f ~/.bashrc.default && -f ~/.bashrc ]] && mv ~/.bashrc ~/.bashrc.default && echo "Renamed: ~/.bashrc > ~/.bashrc.default"
+	[ -d ~/.dotfiles ] && rm -rf ~/.dotfiles && echo "Removed: ~/.dotfiles"
+	[ -d ~/.dotfiles ] || cp -r ../dotfiles ~/.dotfiles && echo "New folder: ~/.dotfiles"
+	cp ~/.dotfiles/.bashrc ~/.bashrc && echo "Installation succesfully completed"
 }
-
-if [ "$1" == "-y" -o "$1" == "-f" -o "$1" == "--force" ]; then
-	install	
-elif [ "$1" == "-a" -o "$1" == "--add-alias" ]; then 
-	install 1
+if [ "$1" == "-f" -o "$1" == "--force" ]; then
+	install
 else
-	read -p "This may overwrite  existing files in your home directory. Are you sure? (y/n) " -n 1; 
-	echo ""
-	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		install
+	if [ -d ~/.dotfiles ]; then
+		echo "dotfiles already installed. Check info for more details"
+		echo "usage: dotfiles [ -info -update -uninstall]"
+		read -p "This may overwrite  existing files in your home directory. Are you sure to force install? (y/n) " -n 1 val;
+		echo ""
+		if [[ $val =~ ^[Yy]$ ]]; then
+			install
+		fi
+	else
+		read -p "This may overwrite  existing files in your home directory. Are you sure? (y/n) " -n 1 val;
+		echo ""
+		if [[ $val =~ ^[Yy]$ ]]; then
+			install
+		fi
 	fi
 fi
 unset install
