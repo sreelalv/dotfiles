@@ -12,7 +12,7 @@ else
 	if [ -d ~/.dotfiles ]; then
 		echo "dotfiles already installed. Check info for more details"
 		echo "usage: dotfiles [ -info -update -uninstall]"
-		read -p "This may overwrite  existing files in your home directory. Are you sure to force install? (y/n) " -n 1 val;
+		read -p "This may overwrite existing files in your home directory. Are you sure to force install? (y/n) " -n 1 val;
 		echo ""
 		if [[ $val =~ ^[Yy]$ ]]; then
 			install
