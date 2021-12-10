@@ -22,7 +22,7 @@ show_the_info(){
 	echo "Usage : dotfiles [ info update remove ]"
 }
 update_the_prompt(){
-	cd ~/.dotfiles && git pull origin master && mv .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+	cd ~/.dotfiles && git pull origin master && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
 }
 
 dotfiles(){
