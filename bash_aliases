@@ -22,7 +22,12 @@ show_the_info(){
 	echo "Usage : dotfiles [ info update remove ]"
 }
 update_the_prompt(){
-	cd ~/.dotfiles && git pull origin master && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+	cd ~/.dotfiles
+	if ! $(git diff-files --quiet --ignore-submodules --); then
+		git stash save "saved preferences" && git pull origin master && git stash pop -q && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+	else
+		cd ~/.dotfiles && git pull origin master && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+	fi
 }
 
 dotfiles(){
