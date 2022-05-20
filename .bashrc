@@ -45,7 +45,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 
-for file in ~/.dotfiles/{bash_prompt,bash_aliases}
+for file in ~/.dotfiles/{prompt.sh,alias.sh,functions.sh}
 do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
