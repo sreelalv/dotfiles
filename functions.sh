@@ -22,7 +22,9 @@ update_the_prompt(){
 	fi
 }
 restart_the_prompt(){
-	cd ~/.dotfiles &&  $(git rev-parse --verify refs/stash &>/dev/null) && git stash pop 1>/dev/null && cd - >/dev/null
+	cd ~/.dotfiles ;
+      	$(git rev-parse --verify refs/stash &>/dev/null) && git stash pop &>/dev/null ;
+       	cd - >/dev/null
 	source ~/.bashrc
 }
 dotfiles(){
