@@ -45,6 +45,14 @@ check_for_update(){
 		show_the_info
 	fi
 }
+phone(){
+	folder="/run/user/1000/gvfs/"
+	if [[ $(ls $folder | wc -l) = 1 ]] ; then 
+		cd  ${folder}*/ && ls ; 
+	elif [[ $(ls $folder | wc -l) > 1 ]]; then 
+		cd  ${folder} && ls ;
+	fi
+}
 check_for_update
 
 
