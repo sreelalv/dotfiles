@@ -14,17 +14,14 @@ show_the_info(){
 }
 
 update_the_prompt(){
-	cd ~/.dotfiles
-	if ! $(git diff-files --quiet --ignore-submodules --); then
-		git stash save "saved preferences" && git pull origin master && git stash pop -q && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+	if ! $(git -C ~/.dotfiles diff-files --quiet --ignore-submodules --); then
+		git -C ~/.dotfiles stash save "saved preferences" && echo "Downloading Updates... " && git -C ~/.dotfiles pull origin master && git -C ~/.dotfiles stash pop -q && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
 	else
-		cd ~/.dotfiles && git pull origin master && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
+		echo "Downloading Updates... " && git -C ~/.dotfiles pull origin master && cp .bashrc ~/.bashrc && cd - && echo "Update Successfull"
 	fi
 }
 restart_the_prompt(){
-	cd ~/.dotfiles ;
-      	$(git rev-parse --verify refs/stash &>/dev/null) && git stash pop &>/dev/null ;
-       	cd - >/dev/null
+      	$(git -C ~/.dotfiles rev-parse --verify refs/stash &>/dev/null) && git -C ~/.dotfiles stash pop &>/dev/null ;
 	source ~/.bashrc
 }
 dotfiles(){
@@ -37,7 +34,23 @@ dotfiles(){
 	elif [[ "$1" = "remove" ]]; then
 		remove_the_prompt
 	else
-		restart_the_prompt
+		restart_the_prompt	
+	fi
+}
+check_for_update(){
+	eval 'git -C ~/.dotfiles fetch &>/dev/null'& disown -a 
+	git -C ~/.dotfiles status -sb | grep behind &>/dev/null
+	if (( $? == 0 )) ; then 
+		echo "New update available for dotfiles"
 		show_the_info
 	fi
 }
+check_for_update
+
+
+
+
+
+
+
+
