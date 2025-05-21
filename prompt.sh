@@ -191,19 +191,19 @@ __customize_prompt__(){
         #To add username
         local USR_NAME=""   #Enter username to add username to the prompt
         local USR_F=$WHITE
-        local USR_B=$L_BLUE
+        local USR_B=$BG_DEFAULT
         local USR_T=$BOLD
 
         # SUCCESS PROMPT
         #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status =0 )
         local FC1=$GREEN        			#FONT_COLOR_1
-        local BG1=$L_BLUE       			#BACKGROUND_1
+        local BG1=$BG_DEFAULT       			#BACKGROUND_1
         local TE1=$BOLD      				#TEXT_EFFECT_1
 
         # FAILED PROMPT
         #Checks for the exit code for last executed program/code and prompts accordingly.( Exit status !=0 )
-        local FC2=$WHITE   					#FONT_COLOR_2
-        local BG2=$RED 	        			#BACKGROUND_2
+        local FC2=$RED   					#FONT_COLOR_2
+        local BG2=$BG_DEFAULT 	        			#BACKGROUND_2
         local TE2=$BOLD         			#TEXT_EFFECT_2
 
 
