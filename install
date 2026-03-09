@@ -1,11 +1,12 @@
 #!/bin/bash
 install() {
-
 	[[ ! -f ~/.bashrc.default && -f ~/.bashrc ]] && mv ~/.bashrc ~/.bashrc.default && echo "Renamed: ~/.bashrc > ~/.bashrc.default"
 	[ -d ~/.dotfiles ] && rm -rf ~/.dotfiles && echo "Removed: ~/.dotfiles"
-	[ -d ~/.dotfiles ] || cp -r ../dotfiles ~/.dotfiles && echo "New folder: ~/.dotfiles"
-	cp ~/.dotfiles/.bashrc ~/.bashrc && echo "Installation succesfully completed"
+	git clone https://github.com/sreelalv/dotfiles ~/.dotfiles
+	ln -s  ~/.dotfiles/.bashrc ~/.bashrc && echo "Installation succesfully completed"
+	exec bash
 }
+
 if [ "$1" == "-f" -o "$1" == "--force" ]; then
 	install
 else
