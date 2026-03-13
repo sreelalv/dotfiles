@@ -44,8 +44,18 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+theUser=''
+if [[ -z "$theUser" ]] ; then
+	if [[ "$(whoami)" != "root" && -d "$HOME/.config/bashDots" ]] ; then 
+		_dot_path="$HOME/.config/bashDots" 
+     	 else
+	      exit
+	fi
+else
+	_dot_path="/home/$theUser/.config/bashDots"
+fi
 
-for file in ~/.dotfiles/{prompt.sh,alias.sh,functions.sh}
+for file in $_dot_path/scripts/*
 do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done

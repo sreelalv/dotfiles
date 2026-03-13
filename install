@@ -1,26 +1,35 @@
 #!/bin/bash
 install() {
+	read -p "Do you want to install for superuser? (Y/N) ==> " -n 2 vall ; 
+	[[ ! -d $HOME/.config ]] && mkdir .config	
+	git clone https://github.com/sreelalv/bashDots $HOME/.config/bashDots
+	
+	if [[ $vall =~ ^[Yy]$ ]]; then 
+		echo -e "Configuring for root\n"
+		[[ ! -f /root/.bashrc.default && -f /root/.bashrc ]] && sudo  mv /root/.bashrc /root/.bashrc.default && echo "Renamed: /root/.bashrc > /root/.bashrc.default"
+		[[ ! -f /root/.bashrc ]] && sudo ln -s $HOME/.config/bashDots/bashrc /root/.bashrc && sed -i "s/theUser=''/theUser='$(whoami)'/" $HOME/.config/bashDots/bashrc 
+	fi
+
+	echo -e "Configuring for user\n"
 	[[ ! -f ~/.bashrc.default && -f ~/.bashrc ]] && mv ~/.bashrc ~/.bashrc.default && echo "Renamed: ~/.bashrc > ~/.bashrc.default"
-	[ -d ~/.dotfiles ] && rm -rf ~/.dotfiles && echo "Removed: ~/.dotfiles"
-	git clone https://github.com/sreelalv/dotfiles ~/.dotfiles
-	ln -s  ~/.dotfiles/.bashrc ~/.bashrc && echo "Installation succesfully completed"
+	[[ ! -f ~/.bashrc ]] && ln -s  $HOME/.config/bashDots/bashrc ~/.bashrc && echo "Installation succesfully completed"
+	
 	exec bash
 }
 
 if [ "$1" == "-f" -o "$1" == "--force" ]; then
 	install
 else
-	if [ -d ~/.dotfiles ]; then
-		echo "dotfiles already installed. Check info for more details"
-		echo "usage: dotfiles [ -info -update -uninstall]"
-		read -p "This may overwrite existing files in your home directory. Are you sure to force install? (y/n) " -n 1 val;
-		echo ""
+	if [ -d $HOME/.config/bashDots ]; then
+		echo "bashDots already installed. Check info for more details"
+		echo "usage: bashdots [ -info -update -remove]"
+		read -p "This may overwrite existing files in your home directory. Are you sure to force install? (Y/N) ==> " -n 2 val;
 		if [[ $val =~ ^[Yy]$ ]]; then
+			rm -rf $HOME/.config/bashDots && echo "Removed: $HOME/.config/bashDots "
 			install
 		fi
 	else
-		read -p "This may overwrite  existing files in your home directory. Are you sure? (y/n) " -n 1 val;
-		echo ""
+		read -p "This may overwrite  existing files in your home directory. Are you sure? (Y/N) ==> " -n 2 val;
 		if [[ $val =~ ^[Yy]$ ]]; then
 			install
 		fi

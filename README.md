@@ -7,14 +7,12 @@
 ## Installation
 
 Run the command to install  
-```  
-  
-source <(curl -fsSL "https://raw.githubusercontent.com/sreelalv/dotfiles/refs/heads/master/install")  
-  
-  ```
+```
+source <(curl -fsSL "https://raw.githubusercontent.com/sreelalv/bashDots/refs/heads/master/install")
+```
   
 The install script creates a backup of your existing '.bashrc' as '.bashrc.default' in you home directory.
 
 ## Usage  
   
-`dotfiles [ info update remove ]`
+`bashdots [ info update remove ]`

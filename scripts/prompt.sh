@@ -58,23 +58,21 @@ __prompt__(){
         echo -e "${final_git_details}"
     }
 
-
-
-	# Highlight the user name when logged in as root.
-   	if [[ "${USER}" == "root" ]]; then
-       	PROMPT_USER="${TX3} ROOT "
-   	else
-        PROMPT_USER="${USER_NAME}"
-   	fi
-
-
     ps1(){
-
+        
         # Check exit status of last executed process, the prompt the prompt accordingly
         if [ "$?" -eq 0 ]; then
-            local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL} "
+            if [[ "$(whoami)" = "root" ]] ; then 
+           	    local PROMPT_USER="${TX1} 󰢚 "
+            else           
+                local PROMPT_RESULT="${TX1} ${PROMPT_SYMBOL} "
+            fi 
         else
-            local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL} "
+            if [[ "$(whoami)" = "root" ]] ; then 
+           	    local PROMPT_USER="${TX2} 󰢚 "
+            else           
+                local PROMPT_RESULT="${TX2} ${PROMPT_SYMBOL} "
+            fi
         fi
     	
     	PS1="\n"
@@ -185,8 +183,8 @@ __customize_prompt__(){
 
         #INPUT FORMAT
         P_IN=$RE                #Set default font color to terminal
-        PROMPT_SYMBOL="→"
-#        PROMPT_SYMBOL="▶"
+        PROMPT_SYMBOL="→"     # '󰜴'  '󰁕'  ''  ''
+        #PROMPT_SYMBOL="▶"
 
         #To add username
         local USR_NAME=""   #Enter username to add username to the prompt
