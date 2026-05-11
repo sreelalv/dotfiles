@@ -1,0 +1,115 @@
+@define-color bg0 #293847;
+
+* {
+    all: unset;
+    font-family: "Google Sans Flex", "JetBrainsMono Nerd Font Propo", "Noto Sans CJK JP", "Noto Sans CJK KR";
+    font-size: x-small;
+    font-weight: bolder;
+    border-radius: 6px;
+}
+
+.modules-left {
+    margin-left: 10px;
+}
+
+.modules-right {
+    margin-right: 10px;
+}
+
+#cpu,
+#memory {
+    background-color: @bg0;
+    padding: 2px 20px;
+    margin: 0 5px;
+}
+
+#clock,
+#tray {
+    background-color: @bg0;
+    padding: 2px 20px;
+    margin: 0 5px;
+}
+
+#custom-dnd.dnd-on{
+    background-color: @bg0;
+    padding: 2px 20px;
+    margin: 0 5px;
+}
+
+#tray>.needs-attention {
+    background-color: red;
+}
+
+#workspaces {
+    background-color: @bg0;
+    padding: 2px 10px;
+    margin: 0 5px;
+}
+
+#workspaces button {
+    padding: 0 2px;
+    margin: 0 2px;
+    transition: all 100ms ease-in-out;
+}
+
+#workspaces button.active {
+    background-color: white;
+    padding: 0 8px;
+    min-width: .8rem;
+    color: black;
+}
+
+#workspaces button.empty {
+    color: black;
+}
+
+#workspaces button.urgent {
+    background-color: #eb4d4b;
+}
+
+#pulseaudio,
+#network,
+#backlight,
+#battery {
+    margin: 0 5px;
+    background-color: @bg0;
+    padding: 2px 20px;
+}
+
+#pulseaudio {
+    padding-right: 10px;
+}
+
+#pulseaudio.muted {
+    background-color: #ff0026;
+}
+
+
+#network {
+    padding: 0px 10px;
+}
+
+#network.disconnected {
+    background-color: #ff0026;
+}
+
+
+#battery {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: #00ff07;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #ff0026;
+    color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}

@@ -1,0 +1,10 @@
+{
+  "positionX": "right",
+  "positionY": "top",
+  "timeout": 5,
+  "timeout-low": 3,
+  "timeout-critical": 0,
+  "control-center-width": 380,
+  "control-center-height": 600,
+  "notification-icon-size": 48
+}

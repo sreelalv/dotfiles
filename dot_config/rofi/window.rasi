@@ -1,0 +1,71 @@
+configuration {
+    modi: "drun";
+    show-icons: true;
+    display-drun: "Apps";
+    display-window: "Recents" ;
+    font: "JetBrains Mono 12";
+
+}
+
+@theme "/dev/null"
+
+* {
+    /* #222831; #31363F; #76ABAE; */
+    bg: #222831;
+    bdr: #31363F;
+    cl1: #76ABAE;
+    cl2: #EEEEEE;
+
+
+    padding: 5px;
+    border-radius: 13px;
+    background-color: @bg ;
+    border-color: @bdr ;
+}
+
+#window {
+    border-radius: 20px;
+    padding: 12px;
+    height : 50% ; 
+    width : 70% ;
+}
+
+#inputbar {
+    border: 2px;
+    border-color: @bdr;
+}
+
+#prompt {
+    text-color: @cl1 ;
+}
+
+#entry {
+    text-color: grey;
+}
+listview{
+    lines : 3 ; 
+    columns : 8 ; 
+}
+#element selected {
+    color: @cl1 ;
+    border-radius: 8px;
+    border: 2px;
+    border-color: @bdr ;
+}
+
+#element selected.active {
+    border: 2px;
+    border-color: @bdr ;
+}
+
+#element-text {
+    color: grey;
+}
+
+#element-text selected {
+    color: @cl1;
+}
+
+#element-icon {
+    size: 50px;
+}

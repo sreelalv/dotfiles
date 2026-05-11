@@ -1,0 +1,159 @@
+{
+    "position": "top",
+    "margin-top": 5,
+    "modules-center": [
+        "clock",
+				"custom/dnd",
+				"custom/battery"
+    ],
+    "modules-left": [
+        "hyprland/workspaces",
+        "cpu",
+        "memory",
+        "tray"
+    ],
+    "modules-right": [
+        "network",
+        "pulseaudio",
+        "backlight",
+        "battery"
+    ],
+    "clock": {
+        "interval": 10,
+        "format": "{:%H:%M}",
+        "max-length": 25
+    },
+		"custom/dnd": {
+				"exec": "~/.config/hypr/scripts/dnd.sh",
+				"interval": 1,
+				"return-type": "json",
+				"on-click": "swaync-client -d"
+		},
+		"custom/battery" :{
+				"exec" : "~/.config/hypr/scripts/battery.sh",
+				"interval" : 60,
+				"return-type": "json"
+		},
+    "tray": {
+        "interval": 1,
+        "icon-size": 12,
+        "spacing": 5,
+        "icons": {
+            "blueman": "bluetooth",
+            "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png",
+            "discord": "/opt/discord/discord.png"
+        }
+    },
+    "cpu": {
+        "interval": 10,
+        "format": "{}% ",
+        "max-length": 10
+    },
+    "memory": {
+        "interval": 10,
+        "format": "{used:0.1f}G "
+    },
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "active": "",
+            "default": "",
+            "urgent": ""
+        },
+        "max-length": 10
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{percent}% {icon}",
+        "format-icons": [
+            "󰃞",
+            "󰃟",
+            "󰃠"
+        ]
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon} ",
+        "format-bluetooth": " {volume}%  {icon} ",
+        "format-muted": " ",
+        "format-icons": {
+            "alsa_output.pci-0000_00_1f.3.analog-stereo": [
+                "",
+                "",
+                ""
+            ],
+            "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "phone-muted": "",
+            "portable": "",
+            "car": "",
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        },
+        "scroll-step": 1,
+        "on-click": "pavucontrol",
+        "ignored-sinks": [
+            "Easy Effects Sink"
+        ],
+        "ignored-sources": [
+            "Easy Effects Sink"
+        ]
+    },
+    "network": {
+        "interval": 1,
+        "interface": "wlan0",
+        "format": "{ifname}",
+        "format-wifi": " ↓{bandwidthDownBytes} ↑{bandwidthUpBytes}",
+        "format-ethernet": " ↓{bandwidthDownBytes} ↑{bandwidthUpBytes}",
+        "format-disconnected": "󰤫  Disconnected", //An empty format will hide the module.
+        "tooltip-format": "{ifname} via {gwaddr} 󰊗",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+        "tooltip-format-ethernet": "{ifname} ",
+        "tooltip-format-disconnected": "Disconnected",
+        "max-length": 20
+    },
+    "battery": {
+				"exec" : "$HOME/.config/hypr/scripts/battery.sh", 
+        "bat": "BAT1",
+        "interval": 60,
+        "format": "{capacity}% {icon}",
+        "format-icons": {
+            "default": [
+                "󰂎",
+                "󰁺",
+                "󰁻",
+                "󰁼",
+                "󰁽",
+                "󰁾",
+                "󰁿",
+                "󰂀",
+                "󰂁",
+                "󰂂",
+                "󰁹"
+            ],
+            "charging": [
+                "󰢟",
+                "󰢜",
+                "󰂆",
+                "󰂇",
+                "󰂈",
+                "󰢝",
+                "󰂉",
+                "󰢞",
+                "󰂊",
+                "󰂋",
+                "󰂅"
+            ]
+        }
+    }
+}
