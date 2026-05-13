@@ -3,9 +3,8 @@
     "margin-top": 5,
     "modules-center": [
         "clock",
-				"custom/dnd",
-				"custom/battery"
-    ],
+        "custom/dnd",
+],
     "modules-left": [
         "hyprland/workspaces",
         "cpu",
@@ -23,17 +22,12 @@
         "format": "{:%H:%M}",
         "max-length": 25
     },
-		"custom/dnd": {
-				"exec": "~/.config/hypr/scripts/dnd.sh",
-				"interval": 1,
-				"return-type": "json",
-				"on-click": "swaync-client -d"
-		},
-		"custom/battery" :{
-				"exec" : "~/.config/hypr/scripts/battery.sh",
-				"interval" : 60,
-				"return-type": "json"
-		},
+    "custom/dnd": {
+            "exec": "~/.config/hypr/scripts/dnd.sh",
+            "interval": 1,
+            "return-type": "json",
+            "on-click": "swaync-client -d"
+    },
     "tray": {
         "interval": 1,
         "icon-size": 12,
@@ -123,10 +117,11 @@
         "max-length": 20
     },
     "battery": {
-				"exec" : "$HOME/.config/hypr/scripts/battery.sh", 
+        "exec" : "$HOME/.config/hypr/scripts/battery.sh", 
         "bat": "BAT1",
         "interval": 60,
         "format": "{capacity}% {icon}",
+        "tooltip-format": "{power} {timeTo}",
         "format-icons": {
             "default": [
                 "󰂎",
