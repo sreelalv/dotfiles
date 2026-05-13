@@ -38,7 +38,7 @@ if ! shopt -oq posix; then
 fi
 
 
-for file in $HOME/.config/scripts/{prompt.sh,functions.sh,userconfigs.sh}
+for file in $HOME/.config/scripts/*
 do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done

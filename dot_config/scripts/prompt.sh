@@ -67,12 +67,17 @@ __prompt__(){
             local STATUS="${TX2}" 
         fi
 
+
         if [[ "$(whoami)" = "root" ]] ; then 
             local PROMPT_USER="${TX4} \w${P_IN}"
             local PROMPT_SYMBOL="${TX2}󰢚 "
-        elif [[ -n "$USR_NAME" ]] ; then 
-            local PROMPT_USER="${USER_NAME} ${STATUS}${TX4} \w${P_IN}"
-        else           
+        elif [[ -n "$SSH_TTY" ]] ;then 
+            if [[ -z "$USER_NAME" ]]; then
+                local PROMPT_USER="${USR}\u@\h ${TX4}\w${P_IN}"
+            fi
+        elif ! [[ -z "$USER_NAME" ]]; then
+            local PROMPT_USER="${USER_NAME} ${TX4}\w${P_IN}"
+        else
             local PROMPT_USER="${TX4} \w${P_IN}"
         fi 
 
@@ -157,7 +162,7 @@ __customize_prompt__(){
     local      CYAN=";14"
     local    ORANGE=";166"
     local      LIME=";10"
-    local      GRAY=";235"
+    local      GREY=";235"
     local      PINK=";201"
 
     ## TYPE
@@ -182,12 +187,12 @@ __customize_prompt__(){
 
     #INPUT FORMAT
     P_IN=$RE                #Set default font color to terminal
-    PROMPT_SYMBOL=""     # '󰜴'  '󰁕'  ''  ''
+    PROMPT_SYMBOL="❯"
     #PROMPT_SYMBOL="▶"
 
     #To add username
     USR_NAME=""   #Enter username to add username to the prompt
-    local USR_F=$WHITE
+    local USR_F=$L_BLUE
     local USR_B=$BG_DEFAULT
     local USR_T=$BOLD
 
@@ -269,12 +274,14 @@ __customize_prompt__(){
         local  FG_BR=$STABLE_FG
     fi
 
-    if [ -n USR_NAME ]; then
-        format_font USR $USR_T $USR_F $USR_B        #USERNAME_FORMAT
-        USER_NAME="${USR}${USR_NAME}"
-        export USER_NAME
-        export USR_NAME
+    format_font USR $USR_T $USR_F $USR_B        #USERNAME_FORMAT
+    if ! [[ -z "$USR_NAME" ]]; then
+        USER_NAME="${USR_NAME}"
+    else 
+        USER_NAME=""
     fi
+    export USER_NAME
+    export USR
 
     format_font TX1 $TE1 $FC1 $BG1      #TEXT_FORMAT_1
     export TX1
