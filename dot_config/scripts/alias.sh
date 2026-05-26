@@ -21,3 +21,4 @@ alias .....="cd ../../../.."
 alias vim='nvim'
 alias cat='bat'
 
+export EDITOR=nvim
