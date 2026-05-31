@@ -7,7 +7,7 @@ yt-mpv(){
         return
     else
         if [[ -n "$comment" ]]; then 
-            printf "%s|%s" "$comment" "$url" >> $HOME/.config/mpv/mpv_history
+            printf "%s|%s\n" "$comment" "$url" >> $HOME/.config/mpv/mpv_history
         fi
         mpv "$url"
     fi
