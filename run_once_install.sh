@@ -28,7 +28,7 @@ for package in "${packages[@]}" ; do
 done
 
 if [[ "$(uname -m)" = "x86_64" ]] ;then
-    x86_64_packages=("blueman" "bluez-utils" "brightnessctl" "libnotify" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "wireplumber" "xclip" "yazi" "zenity")
+    x86_64_packages=("blueman" "bluez-utils" "brightnessctl" "evince" "grim" "libnotify" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "wireplumber" "xclip" "yazi" "zenity")
     for package in "${x86_64_packages[@]}" ; do 
         printf "installing %s...\n" "$package"
         install_package $package
