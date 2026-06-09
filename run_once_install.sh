@@ -115,3 +115,5 @@ while true ; do
         break
     fi
 done
+
+echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml

@@ -1,0 +1,10 @@
+{{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $name := promptStringOnce . "name" "Name" -}}
+
+mode = "symlink"
+
+[data]
+    email = {{ $email |quote }} 
+    name = {{ $name | quote }} 
+
+
