@@ -1,60 +1,117 @@
 #!/usr/bin/env bash
 
+RED="\e[31m"
+GREEN="\e[32m"
+RESET="\e[0m"
+CLEAR="\r\033[K"
+
 install_package(){
     local package="$1"
+    local status=0
+    printf "installing $package... "
     if [[ $(command -v apt) ]]; then
-        if [[ -n "$TERMUX_VERSION" ]]; then
-            pkg install -y $package >/dev/null 2>&1 || echo -e "App not Installed"
+        if ! dpkg -s package_name >/dev/null 2>&1; then
+            if [[ -n "$TERMUX_VERSION" ]]; then
+                pkg install -y $package >/dev/null 2>&1 && status=1
+            else
+                sudo apt-get install -y $package 2>/dev/null && status=1
+            fi
         else
-            sudo apt-get install -y $package 2>/dev/null || echo -e "App not Installed"
+            status=1
         fi
     elif [[ $(command -v pacman) ]]; then
-        sudo pacman -S --noconfirm $package >/dev/null 2>&1 || echo -e "App not Installed"
+        if ! pacman -Qi "$package" >/dev/null 2>&1 ; then 
+            sudo pacman -S --noconfirm $package >/dev/null 2>&1 && status=1
+        else 
+            status=1
+        fi
     elif [[ $(command -v dnf) ]] ; then
-        sudo dnf install -y $package 2>/dev/null || echo -e "App not Installed"
+        sudo dnf install -y $package 2>/dev/null && status=1
+    fi
+    if [[ $status == 1 ]] ;then 
+        printf "${CLEAR}${package} ${GREEN}Installed${RESET}\n" 
+    else
+        printf "${CLEAR}${package} ${RED}Not Installed${RESET}\n"
     fi
 }
+
+sudo ls >/dev/null 2>&1
+packages=("bash-completion" "bat" "curl" "gcc" "git" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "aria2" "yt-dlp" "python3")
+
+for package in "${packages[@]}" ; do 
+    install_package $package
+done
+
+if [[ "$(uname -m)" = "x86_64" ]] ;then
+    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
+
+    for package in "${x86_64_packages[@]}" ; do 
+        install_package $package
+    done
+fi
 
 if ! [[ -d ~/.tmux ]] ; then 
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-sudo ls >/dev/null 2>&1
-packages=("base-devel" "bash-completion" "bat" "curl" "gcc" "git" "lua-language-server" "make" "man-db" "man-pages" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "aria2" "python3")
-
-for package in "${packages[@]}" ; do 
-    printf "installing %s...\n" "$package"
-    install_package $package
-done
-
-if [[ "$(uname -m)" = "x86_64" ]] ;then
-    x86_64_packages=("blueman" "bluez-utils" "brightnessctl" "evince" "grim" "libnotify" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "wireplumber" "xclip" "yazi" "zenity")
-    for package in "${x86_64_packages[@]}" ; do 
-        printf "installing %s...\n" "$package"
-        install_package $package
-    done
+if [[ $(command -v pacman) ]]; then
+    if ! pacman -Qi "yay" >/dev/null 2>&1 ; then 
+        git clone http://aur.archlinux.org/yay ~/yay
+        cd ~/yay
+        makepkg -si 
+        cd - 
+        rm -rf ~/yay
+    fi
 fi
 
-if [[ -n "$TERMUX_VERSION" ]]; then
-    npm install -g tree-sitter-cli 2>/dev/null
-else
-    sudo npm install -g tree-sitter-cli 2>/dev/null
-fi
-
-read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val 
-if [[ $val =~ ^[Yy][Ee][Ss]$ ]] ; then 
-    hypr_packages=("hyprland" "kitty" "alacritty" "rofi" "waybar" "hypridle" "hyprlock" "hyprpaper" "swaync")
-    for package in "${hypr_packages[@]}" ; do
-        printf "installing %s...\n" "$package"
-        install_package $package
-
+while true ; do 
+    read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val 
+    if [[ $val =~ ^[Yy][Ee][Ss]$ || $val =~ ^[Yy]$ ]] ; then 
+        hypr_packages=("hyprland" "kitty" "alacritty" "rofi" "waybar" "hypridle" "hyprlock" "hyprpaper" "swaync")
+        for package in "${hypr_packages[@]}" ; do
+            install_package $package
+        done
         systemctl --user enable hyprpaper
         systemctl --user start hyprpaper
         systemctl --user enable hypridle
         systemctl --user start hypridle
+        systemctl --user enable swaync
+        systemctl --user start swaync 
+        
+        [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
+        if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
+            git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
+        fi
+        break 
+    elif [[ $val =~ ^[Nn][Oo]$ || $val =~ ^[Nn]$ ]] ; then
+        break
+    fi
+done
 
-    done
-else
-    echo "Installation Completed..."
-fi
+while true ; do 
+    read -p "Do you want to install KVM/QEMU Virtual Machine? [Yes/No] -> " -n 4 val
+    if [[ $val =~ ^[Yy][Ee][Ss]$ || $val =~ ^[Yy]$ ]] ; then 
+        vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
+        for package in "${vm_packages[@]}" ; do
+            install_package $package
+        done
 
+        sudo systemctl enable --now libvirtd
+
+        if [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'intel')" == 0 ]] ; then 
+            sudo modprobe kvm_intel
+        elif [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'amd')" == 0 ]] ;then 
+            sudo modprobe kvm_amd
+        fi
+
+        sudo usermod -aG libvirt,kvm $USER
+
+        if [[ "$(sudo virsh net-list --all |awk '{print $1}' | grep default)" == 0 ]] ; then 
+            sudo virsh net-start default
+            sudo virsh net-autostart default
+        fi
+        break 
+    elif [[ $val =~ ^[Nn][Oo]$ || $val =~ ^[Nn]$ ]] ; then 
+        break
+    fi
+done
