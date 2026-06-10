@@ -14,7 +14,7 @@ install_package(){
             if [[ -n "$TERMUX_VERSION" ]]; then
                 pkg install -y $package >/dev/null 2>&1 && status=1
             else
-                sudo apt-get install -y $package 2>/dev/null && status=1
+                sudo apt-get install -y $package >/dev/null 2>&1 && status=1
             fi
         else
             status=1
@@ -36,14 +36,15 @@ install_package(){
 }
 
 sudo ls >/dev/null 2>&1
-packages=("bash-completion" "bat" "curl" "gcc" "git" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "aria2" "yt-dlp" "python3")
+packages=("bash-completion" "bat" "curl" "gcc" "git" "htop" "btop" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "aria2" "yt-dlp" "python3")
 
 for package in "${packages[@]}" ; do 
     install_package $package
 done
 
-if [[ "$(uname -m)" = "x86_64" ]] ;then
-    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
+read -p "Do you want to install Extra packages? [Yes/No] -> " -n 4 val 
+if [[ $val =~ ^[Yy] || $val =~ $[Yy][Ee][Ss] ]] ;then
+    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sshfs" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
