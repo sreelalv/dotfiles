@@ -55,16 +55,6 @@ if ! [[ -d ~/.tmux ]] ; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-if [[ $(command -v pacman) ]]; then
-    if ! pacman -Qi "yay" >/dev/null 2>&1 ; then 
-        git clone http://aur.archlinux.org/yay ~/yay
-        cd ~/yay
-        makepkg -si 
-        cd - 
-        rm -rf ~/yay
-    fi
-fi
-
 while true ; do 
     read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val 
     if [[ $val =~ ^[Yy][Ee][Ss]$ || $val =~ ^[Yy]$ ]] ; then 
