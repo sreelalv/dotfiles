@@ -5,6 +5,11 @@ GREEN="\e[32m"
 RESET="\e[0m"
 CLEAR="\r\033[K"
 
+
+read -p "Do you want to install Extra packages? [Yes/No] -> " -n 4 val_extra
+read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val_hypr
+read -p "Do you want to install KVM/QEMU Virtual Machine? [Yes/No] -> " -n 4 val_vm
+
 install_package(){
     local package="$1"
     local status=0
@@ -42,69 +47,72 @@ for package in "${packages[@]}" ; do
     install_package $package
 done
 
-read -p "Do you want to install Extra packages? [Yes/No] -> " -n 4 val 
-if [[ $val =~ ^[Yy] || $val =~ $[Yy][Ee][Ss] ]] ;then
-    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pulseaudio" "slurp" "sshfs" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
+if [[ $val_extra =~ ^[Yy] || $val_extra =~ $[Yy][Ee][Ss] ]] ;then
+    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pipewire-pulse" "slurp" "sshfs" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
     done
 fi
 
+if [[ -n "$TERMUX_VERSION" ]]; then
+    printf "installing tree-sitter-cli... " && npm install -g tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
+else
+    printf "installing tree-sitter-cli... " && sudo npm install -g tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
+fi
+
 if ! [[ -d ~/.tmux ]] ; then 
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-while true ; do 
-    read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val 
-    if [[ $val =~ ^[Yy][Ee][Ss]$ || $val =~ ^[Yy]$ ]] ; then 
-        hypr_packages=("hyprland" "kitty" "alacritty" "rofi" "waybar" "hypridle" "hyprlock" "hyprpaper" "swaync")
-        for package in "${hypr_packages[@]}" ; do
-            install_package $package
-        done
-        systemctl --user enable hyprpaper
-        systemctl --user start hyprpaper
-        systemctl --user enable hypridle
-        systemctl --user start hypridle
-        systemctl --user enable swaync
-        systemctl --user start swaync 
-        
-        [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
-        if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
-            git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
-        fi
-        break 
-    elif [[ $val =~ ^[Nn][Oo]$ || $val =~ ^[Nn]$ ]] ; then
-        break
+if ! grep "symlink"  ~/.config/chezmoi/chezmoi.toml ; then
+    echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
+fi
+
+if [[ $val_vm =~ ^[Yy][Ee][Ss]$ || $val_vm =~ ^[Yy]$ ]] ; then 
+    vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
+    for package in "${vm_packages[@]}" ; do
+        install_package $package
+    done
+
+    sudo systemctl enable --now libvirtd
+
+    if [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'intel')" == 0 ]] ; then 
+        sudo modprobe kvm_intel
+    elif [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'amd')" == 0 ]] ;then 
+        sudo modprobe kvm_amd
     fi
-done
 
-while true ; do 
-    read -p "Do you want to install KVM/QEMU Virtual Machine? [Yes/No] -> " -n 4 val
-    if [[ $val =~ ^[Yy][Ee][Ss]$ || $val =~ ^[Yy]$ ]] ; then 
-        vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
-        for package in "${vm_packages[@]}" ; do
-            install_package $package
-        done
+    sudo usermod -aG libvirt,kvm $USER
 
-        sudo systemctl enable --now libvirtd
-
-        if [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'intel')" == 0 ]] ; then 
-            sudo modprobe kvm_intel
-        elif [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'amd')" == 0 ]] ;then 
-            sudo modprobe kvm_amd
-        fi
-
-        sudo usermod -aG libvirt,kvm $USER
-
-        if [[ "$(sudo virsh net-list --all |awk '{print $1}' | grep default)" == 0 ]] ; then 
-            sudo virsh net-start default
-            sudo virsh net-autostart default
-        fi
-        break 
-    elif [[ $val =~ ^[Nn][Oo]$ || $val =~ ^[Nn]$ ]] ; then 
-        break
+    if [[ "$(sudo virsh net-list --all |awk '{print $1}' | grep default)" == 0 ]] ; then 
+        sudo virsh net-start default
+        sudo virsh net-autostart default
     fi
-done
+fi
 
-echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
+if [[ $val_hypr =~ ^[Yy][Ee][Ss]$ || $val_hypr =~ ^[Yy]$ ]] ; then 
+    hypr_packages=("hyprland" "kitty" "alacritty" "rofi" "waybar" "hypridle" "hyprlock" "hyprpaper" "sddm" "swaync")
+    for package in "${hypr_packages[@]}" ; do
+        install_package $package
+    done
+    systemctl --user enable hyprpaper
+    systemctl --user start hyprpaper
+    systemctl --user enable hypridle
+    systemctl --user start hypridle
+    systemctl --user enable swaync
+    systemctl --user start swaync 
+
+    sudo mkdir -p /etc/sddm.conf.d
+    echo "[Autologin]" |sudo tee /etc/sddm.conf.d/autologin.conf
+    echo "User=$(whoami)" | sudo tee -a /etc/sddm.conf.d/autologin.conf
+    echo "Session=hyprland.desktop" | sudo tee -a /etc/sddm.conf.d/autologin.conf
+    
+    [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
+    if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
+        git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
+    fi
+    sudo systemctl enable sddm
+fi
+
+
