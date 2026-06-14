@@ -41,7 +41,7 @@ install_package(){
 }
 
 sudo ls >/dev/null 2>&1
-packages=("bash-completion" "bat" "curl" "gcc" "git" "htop" "btop" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "aria2" "yt-dlp" "python3")
+packages=("bash-completion" "bat" "curl" "gcc" "git" "htop" "btop" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "syncthing" "aria2" "yt-dlp" "python3")
 
 for package in "${packages[@]}" ; do 
     install_package $package
