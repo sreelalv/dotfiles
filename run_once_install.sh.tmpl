@@ -7,8 +7,6 @@ CLEAR="\r\033[K"
 
 
 read -p "Do you want to install Extra packages? [Yes/No] -> " -n 4 val_extra
-read -p "Do you want to install hyprland configs? [Yes/No] -> " -n 4 val_hypr
-read -p "Do you want to install KVM/QEMU Virtual Machine? [Yes/No] -> " -n 4 val_vm
 
 install_package(){
     local package="$1"
@@ -31,7 +29,7 @@ install_package(){
             status=1
         fi
     elif [[ $(command -v dnf) ]] ; then
-        sudo dnf install -y $package 2>/dev/null && status=1
+        sudo dnf install -y $package >/dev/null 2>&1 && status=1
     fi
     if [[ $status == 1 ]] ;then 
         printf "${CLEAR}${package} ${GREEN}Installed${RESET}\n" 
@@ -48,7 +46,7 @@ for package in "${packages[@]}" ; do
 done
 
 if [[ $val_extra =~ ^[Yy] || $val_extra =~ $[Yy][Ee][Ss] ]] ;then
-    x86_64_packages=("base-devel" "blueman" "bluez-utils" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "libnotify" "mpv" "networkmanager" "pipewire" "pavucontrol" "pipewire-pulse" "slurp" "sshfs" "sudo" "thunar" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wireplumber" "wl-clipboard" "xclip" "yazi" "zenity")
+    x86_64_packages=("evince" "firefox" "ffmpeg" "grim" "libnotify" "mpv" "networkmanager" "slurp" "sshfs" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji""wl-clipboard" "xclip" "yazi" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
@@ -68,8 +66,7 @@ fi
 if ! grep "symlink"  ~/.config/chezmoi/chezmoi.toml ; then
     echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
 fi
-
-if [[ $val_vm =~ ^[Yy][Ee][Ss]$ || $val_vm =~ ^[Yy]$ ]] ; then 
+{{ if eq .vm "yes" }}
     vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
     for package in "${vm_packages[@]}" ; do
         install_package $package
@@ -89,9 +86,9 @@ if [[ $val_vm =~ ^[Yy][Ee][Ss]$ || $val_vm =~ ^[Yy]$ ]] ; then
         sudo virsh net-start default
         sudo virsh net-autostart default
     fi
-fi
+{{ end }} 
 
-if [[ $val_hypr =~ ^[Yy][Ee][Ss]$ || $val_hypr =~ ^[Yy]$ ]] ; then 
+{{ if eq .windowManager "hyprland" }}
     hypr_packages=("hyprland" "kitty" "alacritty" "rofi" "waybar" "hypridle" "hyprlock" "hyprpaper" "sddm" "swaync")
     for package in "${hypr_packages[@]}" ; do
         install_package $package
@@ -113,6 +110,5 @@ if [[ $val_hypr =~ ^[Yy][Ee][Ss]$ || $val_hypr =~ ^[Yy]$ ]] ; then
         git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
     fi
     sudo systemctl enable sddm
-fi
-
+{{ end }} 
 

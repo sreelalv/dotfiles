@@ -23,7 +23,7 @@
         "max-length": 25
     },
     "custom/dnd": {
-            "exec": "~/.config/hypr/scripts/dnd.sh",
+            "exec": "~/.config/functions/dnd.sh",
             "interval": 1,
             "return-type": "json",
             "on-click": "swaync-client -d"
@@ -117,7 +117,7 @@
         "max-length": 20
     },
     "battery": {
-        "exec" : "$HOME/.config/hypr/scripts/battery.sh", 
+        "exec" : "$HOME/.config/functions/battery.sh", 
         "bat": "BAT1",
         "interval": 60,
         "format": "{capacity}% {icon}",

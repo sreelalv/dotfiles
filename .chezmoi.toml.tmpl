@@ -1,10 +1,12 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 {{- $name := promptStringOnce . "name" "Name" -}}
+{{- $windowManager := promptChoiceOnce . "windowManager" "Window Manager"  (list "none" "hyprland") -}}
+{{- $vm := promptChoiceOnce . "vm" "Do you want to install Virtual Machine" (list "yes" "no") -}}
 
 mode = "symlink"
 
 [data]
     email = {{ $email |quote }} 
     name = {{ $name | quote }} 
-
-
+    windowManager = {{ $windowManager | quote }} 
+    vm = {{ $vm | quote }} 
