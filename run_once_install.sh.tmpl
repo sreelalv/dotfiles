@@ -54,9 +54,9 @@ if [[ $val_extra =~ ^[Yy] || $val_extra =~ $[Yy][Ee][Ss] ]] ;then
 fi
 
 if [[ -n "$TERMUX_VERSION" ]]; then
-    printf "installing tree-sitter-cli... " && npm install -g tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
+    printf "installing tree-sitter-cli... " && npm install -g tree-sitter-cli --allow-scripts=tree-sitter-cli  2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
 else
-    printf "installing tree-sitter-cli... " && sudo npm install -g tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
+    printf "installing tree-sitter-cli... " && sudo npm install -g tree-sitter-cli --allow-scripts=tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
 fi
 
 if ! [[ -d ~/.tmux ]] ; then 

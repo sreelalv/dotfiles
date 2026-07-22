@@ -3,3 +3,7 @@
 .config/waybar
 .config/swaync
 {{ end }} 
+
+{{ if ne .windowManager "i3" }} 
+.config/i3
+{{ end }} 
