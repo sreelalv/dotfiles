@@ -41,7 +41,6 @@ battery all {
         status_bat = "🔋 BAT"
         status_unk = "? UNK"
         status_full = "☻ FULL"
-        status_idle = "☻ IDLE"
         path = "/sys/class/power_supply/BAT%d/uevent"
         low_threshold = 10
 }

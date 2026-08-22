@@ -33,19 +33,19 @@ __prompt__(){
         else
             # Check for untracked files.
             if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-                s+="${UNT}●"
+                s+="${UNT}?"
             fi
             # Check for unstaged changes.
             if ! $(git diff-files --quiet --ignore-submodules --); then
-                s+="${UNS}●"
+                s+="${UNS}!"
             fi
             # Check for stashed files.
             if $(git rev-parse --verify refs/stash &>/dev/null); then
-                s+="${STH}●"
+                s+="${STH}T"
             fi
             # Check for uncommitted changes in the index.
             if ! $(git diff --quiet --ignore-submodules --cached); then
-                s+="${STG}●"
+                s+="${STG}S"
             fi
         fi
 
@@ -59,7 +59,6 @@ __prompt__(){
     }
 
     ps1(){
-
         # Check exit status of last executed process, the prompt the prompt accordingly
         if [ "$?" -eq 0 ]; then
             local STATUS="${TX1}" 
@@ -70,7 +69,7 @@ __prompt__(){
 
         if [[ "$(whoami)" = "root" ]] ; then 
             local PROMPT_USER="${TX4} \w${P_IN}"
-            local PROMPT_SYMBOL="${TX2}󰢚 "
+            local PROMPT_SYMBOL="${TX2}# "
         elif [[ -n "$SSH_TTY" ]] ;then 
             if [[ -z "$USER_NAME" ]]; then
                 local PROMPT_USER="${USR}\u@\h ${TX4}\w${P_IN}"
@@ -187,8 +186,7 @@ __customize_prompt__(){
 
     #INPUT FORMAT
     P_IN=$RE                #Set default font color to terminal
-    PROMPT_SYMBOL="❯"
-    #PROMPT_SYMBOL="▶"
+    PROMPT_SYMBOL=">"
 
     #To add username
     USR_NAME=""   #Enter username to add username to the prompt
