@@ -5,32 +5,55 @@ GREEN="\e[32m"
 RESET="\e[0m"
 CLEAR="\r\033[K"
 
+packageManager=""
 
-read -p "Do you want to install Extra packages? [Yes/No] -> " -n 4 val_extra
+package_manager(){
+    if [[ $(command -v apt) ]]; then
+        if [[ -n "$TERMUX_VERSION" ]]; then
+            packageManager="pkg"
+        else
+            packageManager="apt"
+        fi
+    elif [[ $(command -v pacman) ]]; then
+        packageManager="pacman"
+    elif [[ $(command -v dnf) ]] ; then
+        packageManager="dnf"
+    fi
+}
 
 install_package(){
     local package="$1"
     local status=0
     printf "installing $package... "
-    if [[ $(command -v apt) ]]; then
-        if ! dpkg -s package_name >/dev/null 2>&1; then
-            if [[ -n "$TERMUX_VERSION" ]]; then
+    case "$packageManager" in 
+        pkg)
+            if ! dpkg -s "$package" >/dev/null 2>&1; then
                 pkg install -y $package >/dev/null 2>&1 && status=1
             else
-                sudo apt-get install -y $package >/dev/null 2>&1 && status=1
+                status=1
             fi
-        else
-            status=1
-        fi
-    elif [[ $(command -v pacman) ]]; then
-        if ! pacman -Qi "$package" >/dev/null 2>&1 ; then 
-            sudo pacman -S --noconfirm $package >/dev/null 2>&1 && status=1
-        else 
-            status=1
-        fi
-    elif [[ $(command -v dnf) ]] ; then
-        sudo dnf install -y $package >/dev/null 2>&1 && status=1
-    fi
+            ;;
+        apt)
+            if ! dpkg -s "$package" >/dev/null 2>&1; then
+                sudo apt-get install -y $package >/dev/null 2>&1 && status=1
+            else
+                status=1
+            fi
+            ;;
+        pacman)
+            if ! pacman -Qi "$package" >/dev/null 2>&1 ; then 
+                sudo pacman -S --noconfirm $package >/dev/null 2>&1 && status=1
+            else
+                status=1
+            fi 
+            ;;
+        dnf)
+            sudo dnf install -y $package >/dev/null 2>&1 && status=1
+            ;;
+        *)
+            status=0
+    esac
+
     if [[ $status == 1 ]] ;then 
         printf "${CLEAR}${package} ${GREEN}Installed${RESET}\n" 
     else
@@ -38,34 +61,47 @@ install_package(){
     fi
 }
 
+if ! grep "symlink"  ~/.config/chezmoi/chezmoi.toml ; then
+    echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
+fi
+
+package_manager
 sudo ls >/dev/null 2>&1
-packages=("alacritty" "bash-completion" "curl" "gcc" "git" "htop" "btop" "lua-language-server" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "unzip" "vim" "vi" "stylua" "tree" "tmux" "wget" "syncthing" "aria2" "yt-dlp" "python3")
+
+case $packageManager in 
+    pkg)
+        packages=("fd-find" "build-essential")
+        ;;
+    apt)
+        packages=("fd-find" "build-essential")
+        ;;
+    pacman)
+        packages=("fd" "gcc" "make" "tree-sitter-cli")
+        ;; 
+    dnf)
+        packages=("fd-find" "gcc" "gcc-c++" "make" "tree-sitter-cli")
+        ;;
+    *)
+        packages=("")
+        ;;
+esac
+
+packages+=("bash-completion" "curl" "git" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "vim" "unzip" "tree" "tmux" "wget" "syncthing" "aria2" "yt-dlp" "python3")
 
 for package in "${packages[@]}" ; do 
     install_package $package
 done
 
-if [[ $val_extra =~ ^[Yy] || $val_extra =~ $[Yy][Ee][Ss] ]] ;then
-    x86_64_packages=("evince" "firefox" "ffmpeg" "grim" "libnotify" "mpv" "networkmanager" "slurp" "sshfs" "ttf-font-awesome" "otf-font-awesome" "noto-fonts" "noto-fonts-cjk" "noto-fonts-emoji" "wl-clipboard" "xclip" "yazi" "zenity")
+{{ if eq .extra "yes" }}
+    x86_64_packages=("alacritty" "evince" "firefox" "ffmpeg" "grim" "mpv" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
     done
-fi
+{{ end }} 
 
-if [[ -n "$TERMUX_VERSION" ]]; then
-    printf "installing tree-sitter-cli... " && npm install -g tree-sitter-cli --allow-scripts=tree-sitter-cli  2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
-else
-    printf "installing tree-sitter-cli... " && sudo npm install -g tree-sitter-cli --allow-scripts=tree-sitter-cli 2>/dev/null && printf "${CLEAR}tree-sitter-cli ${GREEN}Installed${RESET}\n"
-fi
 
-if ! [[ -d ~/.tmux ]] ; then 
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-fi
 
-if ! grep "symlink"  ~/.config/chezmoi/chezmoi.toml ; then
-    echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
-fi
 {{ if eq .vm "yes" }}
     vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
     for package in "${vm_packages[@]}" ; do
@@ -108,6 +144,7 @@ fi
     [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
     if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
         git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
+:s/\S\+/"&"/g
     fi
     sudo systemctl enable sddm
 {{ end }} 
