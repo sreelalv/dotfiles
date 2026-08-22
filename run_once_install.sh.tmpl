@@ -141,11 +141,15 @@ done
     echo "User=$(whoami)" | sudo tee -a /etc/sddm.conf.d/autologin.conf
     echo "Session=hyprland.desktop" | sudo tee -a /etc/sddm.conf.d/autologin.conf
     
+    sudo systemctl enable sddm
+{{ end }} 
+
+{{ if or (eq .windowManager "hyprland") (eq .windowManager "i3")}}
     [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
     if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
         git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
-:s/\S\+/"&"/g
     fi
-    sudo systemctl enable sddm
 {{ end }} 
+
+  
 
