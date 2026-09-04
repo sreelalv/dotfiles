@@ -168,6 +168,8 @@ bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
+bindsym $mod+y exec "$HOME/.config/functions/yt-mpv.sh"
+
 # resize window (you can also use the mouse for that)
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
@@ -197,15 +199,16 @@ bindsym $mod+r mode "resize"
 bindsym Mod1+Tab focus next
 bindsym Mod1+Shift+Tab focus next
 
-assign [class="zen"] $ws2
 assign [class="firefox"] $ws3
-assign [class="mpv"] $ws8
+assign [class="zen$"] $ws2
 assign [class="Virt-manager"] $ws9
 assign [class="Obsidian"] $ws10
 
 exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/default.png
 exec --no-startup-id flatpak run app.zen_browser.zen
 exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
+
+for_window [class="zenity"] focus
 
 default_border pixel 1
 
