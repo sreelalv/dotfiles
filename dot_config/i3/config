@@ -55,7 +55,8 @@ bindsym $mod+Return exec alacritty
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run
+#bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+d exec --no-startup-id rofi -show drun
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a
@@ -196,11 +197,13 @@ bindsym $mod+r mode "resize"
 bindsym Mod1+Tab focus next
 bindsym Mod1+Shift+Tab focus next
 
-assign [class="zen"] $ws1
-assign [class="Alacritty"] $ws2
-assign [class="org.mozilla.firefox"] $ws3
+assign [class="zen"] $ws2
+assign [class="firefox"] $ws3
+assign [class="mpv"] $ws8
 assign [class="Virt-manager"] $ws9
+assign [class="Obsidian"] $ws10
 
+exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/default.png
 exec --no-startup-id flatpak run app.zen_browser.zen
 exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
 

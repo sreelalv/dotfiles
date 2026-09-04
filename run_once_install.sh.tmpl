@@ -93,7 +93,7 @@ for package in "${packages[@]}" ; do
 done
 
 {{ if eq .extra "yes" }}
-    x86_64_packages=("alacritty" "evince" "firefox" "ffmpeg" "grim" "mpv" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
+    x86_64_packages=("alacritty" "evince" "firefox" "ffmpeg" "grim" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
