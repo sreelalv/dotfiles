@@ -1,0 +1,7 @@
+[font]
+size = 10.0
+
+[font.normal]
+style = "Regular"
+family = "JetBrains Mono"
+
