@@ -29,6 +29,8 @@ exec --no-startup-id dex --autostart --environment i3
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork --image=$HOME/Pictures/Wallpapers/default.png
+
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
@@ -167,6 +169,8 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+# lockscreen for i3 
+bindsym Mod1+control+l exec i3lock --image=$HOME/Pictures/Wallpapers/default.png
 
 bindsym $mod+y exec "$HOME/.config/functions/yt-mpv.sh"
 
@@ -209,6 +213,7 @@ exec --no-startup-id flatpak run app.zen_browser.zen
 exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
 
 for_window [class="zenity"] focus
+for_window [class="mpv"] move to workspace 8
 
 default_border pixel 1
 

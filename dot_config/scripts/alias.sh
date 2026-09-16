@@ -11,12 +11,17 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+#cp_alias
+alias cp='cp -v'
+
+#cp_alias
+alias mv='mv  -v'
+
 # Easier navigation: .., ..., ...., .....
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
-
 
 alias vim='nvim'
 

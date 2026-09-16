@@ -37,6 +37,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
+CDPATH=$HOME
 
 for file in $HOME/.config/scripts/*
 do
