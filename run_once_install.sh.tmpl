@@ -61,10 +61,6 @@ install_package(){
     fi
 }
 
-if ! grep "symlink"  ~/.config/chezmoi/chezmoi.toml ; then
-    echo -e "mode = \"symlink\" " >> ~/.config/chezmoi/chezmoi.toml
-fi
-
 package_manager
 sudo ls >/dev/null 2>&1
 

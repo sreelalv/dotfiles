@@ -4,8 +4,6 @@
 {{- $vm := promptChoiceOnce . "vm" "Do you want to install Virtual Machine" (list "yes" "no") -}}
 {{- $extra := promptChoiceOnce . "extra" "Do you want to install extra packages" (list "yes" "no") -}}
 
-mode = "symlink"
-
 [data]
     email = {{ $email |quote }} 
     name = {{ $name | quote }} 
