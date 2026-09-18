@@ -119,7 +119,7 @@ done
 {{ if or (eq .windowManager "hyprland") (eq .windowManager "i3")}}
     [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
     if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
-        git clone https://github.com/sreelalv/hypr-wallpapers $HOME/Pictures/Wallpapers
+        git clone https://github.com/sreelalv/Wallpapers $HOME/Pictures/Wallpapers
     fi
 {{ end }} 
 
