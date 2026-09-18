@@ -6,4 +6,11 @@
 
 {{ if ne .windowManager "i3" }} 
 .config/i3
-{{ end }} 
+.config/i3status
+{{ end }}
+
+{{ if eq .windowManager "none" }}
+.config/alacritty
+.config/mpv
+.config/rofi
+{{ end }}

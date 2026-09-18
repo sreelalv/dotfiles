@@ -88,36 +88,12 @@ for package in "${packages[@]}" ; do
     install_package $package
 done
 
-{{ if eq .extra "yes" }}
+{{ if (ne .windowManager "none")}}
     x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
     done
-{{ end }} 
-
-
-
-{{ if eq .vm "yes" }}
-    vm_packages=("qemu-full" "virt-manager" "virt-viewer" "dnsmasq" "vde2" "openbsd-netcat" "libvirt" "edk2-ovmf" "swtpm")
-    for package in "${vm_packages[@]}" ; do
-        install_package $package
-    done
-
-    sudo systemctl enable --now libvirtd
-
-    if [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'intel')" == 0 ]] ; then 
-        sudo modprobe kvm_intel
-    elif [[ "$(lscpu | grep -Ei 'vendor|model' | grep -i 'amd')" == 0 ]] ;then 
-        sudo modprobe kvm_amd
-    fi
-
-    sudo usermod -aG libvirt,kvm $USER
-
-    if [[ "$(sudo virsh net-list --all |awk '{print $1}' | grep default)" == 0 ]] ; then 
-        sudo virsh net-start default
-        sudo virsh net-autostart default
-    fi
 {{ end }} 
 
 {{ if eq .windowManager "hyprland" }}
