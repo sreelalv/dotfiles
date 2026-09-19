@@ -82,16 +82,23 @@ case $packageManager in
         ;;
 esac
 
-packages+=("bash-completion" "curl" "git" "make" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "vim" "unzip" "tree" "tmux" "wget" "syncthing" "aria2" "yt-dlp" "python3")
+packages+=("bash-completion" "curl" "git" "man" "neovim" "nodejs" "npm" "openssh" "ripgrep" "rsync" "vim" "unzip" "tree" "tmux" "wget" "syncthing" "aria2" "yt-dlp" "python3")
 
 for package in "${packages[@]}" ; do 
     install_package $package
 done
 
 {{ if (ne .windowManager "none")}}
-    x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
+    x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "kitty" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
+        install_package $package
+    done
+{{ end }} 
+
+{{ if eq .windowManager "i3" }}
+    i3_packages=("polybar" "picom")
+    for package in "${i3_packages[@]}" ; do
         install_package $package
     done
 {{ end }} 

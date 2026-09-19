@@ -211,6 +211,7 @@ assign [class="Obsidian"] $ws10
 exec --no-startup-id polybar main
 exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/default.png
 exec --no-startup-id flatpak run app.zen_browser.zen
+exec --no-startup-id picom -b
 #exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
 exec --no-startup-id kitty bash -c 'tmux new-session -A -s default'
 
