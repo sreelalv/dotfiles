@@ -94,6 +94,7 @@ done
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
     done
+
 {{ end }} 
 
 {{ if eq .windowManager "i3" }}
@@ -128,6 +129,15 @@ done
     if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
         git clone https://github.com/sreelalv/Wallpapers $HOME/Pictures/Wallpapers
     fi
+
+    if ! [[ -d "$HOME/.local/share/fonts/JetBrainsMono/" ]] ; then
+        mkdir -p "$HOME/.local/share/fonts"
+        printf "Installing JetBrainsMono Font...\n" 
+        wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+        unzip JetBrainsMono.zip -d ~/.local/share/fonts/JetBrainsMono
+        rm -f JetBrainsMono.zip
+    fi
+
 {{ end }} 
 
   
