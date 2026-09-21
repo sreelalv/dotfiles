@@ -64,6 +64,11 @@ install_package(){
 package_manager
 sudo ls >/dev/null 2>&1
 
+if ! crontab -l | grep ".config/functions/battery.sh" >/dev/null 2>&1; then 
+  cron_job="*/5 * * * * ~/.config/functions/battery.sh"
+  (crontab -l ; echo "$cron_job") | crontab -
+fi
+
 case $packageManager in 
     pkg)
         packages=("fd-find" "build-essential")

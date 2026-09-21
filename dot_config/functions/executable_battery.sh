@@ -1,16 +1,12 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
+status="$(upower -i $(upower -e | awk 'NR==1 {print}') | grep state | awk '{print $2}')"
+percentage="$(upower -i $(upower -e | awk 'NR==1 { print }') | grep percentage | awk '{print $2}' | cut -d'%' -f1)"
 
-status="$(acpi -b | awk '{print $3}' | tr -d ',')"
-percentage="$(acpi -b | awk '{print $4}' | cut -d'%' -f1)"
-
-
-
-if [[ "$status" = "Discharging" && "$percentage" -lt 10 ]] ; then
-  notify-send -u critical "Battery  Low !"
-  while [ "$(acpi -b | awk '{print $3}' | tr -d ',')" = "Discharging" ]
-  do 
-		paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga 
-		sleep 1
-  done  
+if [[ "$status" = "discharging" && "$percentage" -lt 20 ]]; then
+  notify-send -u critical "Battery  Low !" || wall "Battery Low!"
+  while [ "$(upower -i $(upower -e | awk 'NR==1 {print}') | grep state | awk '{print $2}')" = "discharging" ]; do
+    paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga
+    sleep 1
+  done
 fi
