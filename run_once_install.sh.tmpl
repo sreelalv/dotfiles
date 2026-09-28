@@ -62,7 +62,6 @@ install_package(){
 }
 
 package_manager
-sudo ls >/dev/null 2>&1
 
 case $packageManager in 
     pkg)
@@ -89,7 +88,7 @@ for package in "${packages[@]}" ; do
 done
 
 {{ if (ne .windowManager "none")}}
-    x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "grim" "kitty" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
+    x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "feh" "grim" "kitty" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
@@ -98,7 +97,7 @@ done
 {{ end }} 
 
 {{ if eq .windowManager "i3" }}
-    i3_packages=("polybar" "picom")
+    i3_packages=("polybar" "picom" "i3-wm" "sddm")
     for package in "${i3_packages[@]}" ; do
         install_package $package
     done
@@ -140,5 +139,10 @@ done
 
 {{ end }} 
 
-  
+sudo ls >/dev/null 2>&1
+
+if ! crontab -l | grep ".config/functions/battery.sh" >/dev/null 2>&1; then 
+  cron_job="*/5 * * * * ~/.config/functions/battery.sh"
+  (crontab -l ; echo "$cron_job") | crontab -
+fi
 

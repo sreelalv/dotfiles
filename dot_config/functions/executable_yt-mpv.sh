@@ -14,16 +14,18 @@ get_clipboard() {
 }
 
 yt-mpv() {
-  local mpv_entry
+  if [[ "$1" = "--comment" || "$1" = "-c" ]]; then
+    local mpv_entry
 
-  if ! mpv_entry="$(zenity --forms \
-    --title='mpv' \
-    --text='' \
-    --add-entry='Name')"; then
-    return
+    if ! mpv_entry="$(zenity --forms \
+      --title='mpv' \
+      --text='' \
+      --add-entry='Name')"; then
+      return
+    fi
+
+    IFS='|' read -r comment <<<"$mpv_entry"
   fi
-
-  IFS='|' read -r comment <<<"$mpv_entry"
 
   local url="$(get_clipboard)"
 
@@ -38,4 +40,4 @@ yt-mpv() {
   mpv "$url"
 }
 
-yt-mpv
+yt-mpv $@
