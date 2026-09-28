@@ -7,6 +7,8 @@ CLEAR="\r\033[K"
 
 packageManager=""
 
+sudo ls >/dev/null 2>&1
+
 package_manager(){
     if [[ $(command -v apt) ]]; then
         if [[ -n "$TERMUX_VERSION" ]]; then
@@ -88,7 +90,7 @@ for package in "${packages[@]}" ; do
 done
 
 {{ if (ne .windowManager "none")}}
-    x86_64_packages=("alacritty" "brightnessctl" "evince" "firefox" "ffmpeg" "feh" "grim" "kitty" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
+    x86_64_packages=("alacritty" "brightnessctl" "cronie" "evince" "firefox" "ffmpeg" "feh" "flatpak" "grim" "kitty" "mpv" "rofi" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
@@ -97,7 +99,7 @@ done
 {{ end }} 
 
 {{ if eq .windowManager "i3" }}
-    i3_packages=("polybar" "picom" "i3-wm" "sddm")
+    i3_packages=("polybar" "picom" "i3-wm" "i3lock" "sddm")
     for package in "${i3_packages[@]}" ; do
         install_package $package
     done
@@ -124,6 +126,17 @@ done
 {{ end }} 
 
 {{ if or (eq .windowManager "hyprland") (eq .windowManager "i3")}}
+    if command -v flatpak ; then 
+        flatpak install com.vivaldi.Vivaldi
+    fi
+
+    sudo systemctl enable --now cronie
+
+    if ! crontab -l | grep ".config/functions/battery.sh" >/dev/null 2>&1; then 
+      cron_job="*/5 * * * * ~/.config/functions/battery.sh"
+      (crontab -l ; echo "$cron_job") | crontab -
+    fi
+
     [[ ! -d "$HOME/Pictures" ]] && mkdir "$HOME/Pictures" 
     if [[ ! -d "$HOME/Pictures/Wallpapers" ]] ; then 
         git clone https://github.com/sreelalv/Wallpapers $HOME/Pictures/Wallpapers
@@ -139,10 +152,4 @@ done
 
 {{ end }} 
 
-sudo ls >/dev/null 2>&1
-
-if ! crontab -l | grep ".config/functions/battery.sh" >/dev/null 2>&1; then 
-  cron_job="*/5 * * * * ~/.config/functions/battery.sh"
-  (crontab -l ; echo "$cron_job") | crontab -
-fi
 

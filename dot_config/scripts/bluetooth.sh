@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 
 bl()(        #Bluetooth control 
+  if ! command -v  bluetoothctl >/dev/null 2>&1 ; then 
+    echo "bluetoothctl is not installed ! "
+    return
+  fi
+
+  if ! systemctl --quiet is-active bluetooth ; then 
+    printf "Bluetooth is not available \nPlease enable/install bluetooth" 
+    return
+  fi
+
 	if [[ "$(rfkill | grep bluetooth | awk '{print $4}' | grep blocked)" = "blocked" ]] ; then
 		if ! [[ "$1" = "enable" || "$1" = "-h" ||  "$1" = "--help" ||"$1" = "--help" || "$1" = "i" || "$1" = "interactive" ]] ; then 
 			printf "Bluetooth is blocked\n"
