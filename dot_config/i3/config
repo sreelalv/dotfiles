@@ -180,6 +180,7 @@ bindsym $mod+Shift+p exec --no-startup-id "pkill polybar || polybar >/dev/null 2
 
 bindsym $mod+y exec "$HOME/.config/functions/yt-mpv.sh"
 bindsym $mod+Shift+y exec "$HOME/.config/functions/yt-mpv.sh -c"
+bindsym $mod+t exec "kitty yazi"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
