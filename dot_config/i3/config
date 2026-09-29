@@ -178,9 +178,9 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 bindsym Mod1+control+l exec i3lock --image=$HOME/Pictures/Wallpapers/default.png
 bindsym $mod+Shift+p exec --no-startup-id "pkill polybar || polybar >/dev/null 2>&1"
 
-bindsym $mod+y exec "$HOME/.config/functions/yt-mpv.sh"
-bindsym $mod+Shift+y exec "$HOME/.config/functions/yt-mpv.sh -c"
-bindsym $mod+t exec "kitty yazi"
+bindsym $mod+y exec --no-startup-id $HOME/.local/bin/yt-mpv
+bindsym $mod+Shift+y exec --no-startup-id $HOME/.local/bin/yt-mpv -c
+bindsym $mod+t exec "kitty --title yazi -e yazi" ; workspace 4
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -224,6 +224,7 @@ exec --no-startup-id picom -b
 exec --no-startup-id kitty bash -c 'tmux new-session -A -s default'
 
 for_window [class="zenity"] focus
+for_window [title="[Yy]azi"] move to workspace 4
 for_window [class="mpv"] move to workspace 8
 
 default_border none

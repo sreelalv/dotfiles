@@ -38,8 +38,10 @@ if ! shopt -oq posix; then
 fi
 
 CDPATH=$HOME
+PATH="$PATH:$HOME/.local/bin"
 
-for file in $HOME/.config/scripts/*
+
+for file in $HOME/.local/bin/{prompt.sh,alias.sh}
 do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file"
 done

@@ -132,8 +132,8 @@ done
 
     sudo systemctl enable --now cronie
 
-    if ! crontab -l | grep ".config/functions/battery.sh" >/dev/null 2>&1; then 
-      cron_job="*/5 * * * * ~/.config/functions/battery.sh"
+    if ! crontab -l | grep ".local/bin/battery" >/dev/null 2>&1; then 
+      cron_job="*/5 * * * * ~/.local/bin/battery"
       (crontab -l ; echo "$cron_job") | crontab -
     fi
 

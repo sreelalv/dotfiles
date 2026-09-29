@@ -134,4 +134,5 @@ bl()(        #Bluetooth control
 	esac
 	return 0
 )
+bl "$@"
 

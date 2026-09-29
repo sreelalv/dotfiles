@@ -22,4 +22,6 @@ bri(){        # Brightness control
 	fi
 }
 
+bri "$@"
+
 
