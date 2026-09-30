@@ -180,7 +180,7 @@ bindsym $mod+Shift+p exec --no-startup-id "pkill polybar || polybar >/dev/null 2
 
 bindsym $mod+y exec --no-startup-id $HOME/.local/bin/yt-mpv
 bindsym $mod+Shift+y exec --no-startup-id $HOME/.local/bin/yt-mpv -c
-bindsym $mod+t exec "kitty --title yazi -e yazi" ; workspace 4
+bindsym $mod+t exec "bash -c 'if ! pgrep yazi ; then kitty --title yazi -e yazi ; fi'" ; workspace 4
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
