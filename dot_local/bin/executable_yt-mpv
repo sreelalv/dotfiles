@@ -1,18 +1,5 @@
 #!/usr/bin/env bash
 
-get_clipboard() {
-  if [[ -n "${WAYLAND_DISPLAY:-}" ]] && command -v wl-paste >/dev/null 2>&1; then
-    wl-paste
-  elif [[ -n "${DISPLAY:-}" ]] && command -v xclip >/dev/null 2>&1; then
-    xclip -selection clipboard -o
-  elif [[ -n "${DISPLAY:-}" ]] && command -v xsel >/dev/null 2>&1; then
-    xsel --clipboard --output
-  else
-    echo "No supported clipboard utility found." >&2
-    return 1
-  fi
-}
-
 yt-mpv() {
   if [[ "$1" = "--comment" || "$1" = "-c" ]]; then
     local mpv_entry
@@ -27,7 +14,7 @@ yt-mpv() {
     IFS='|' read -r comment <<<"$mpv_entry"
   fi
 
-  local url="$(get_clipboard)"
+  local url="$(getit)"
 
   if [[ -z "$url" ]]; then
     return

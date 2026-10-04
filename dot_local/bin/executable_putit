@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+put_clipboard() {
+  if [[ -n "${WAYLAND_DISPLAY:-}" ]] && command -v wl-copy >/dev/null 2>&1; then
+    printf '%s' "$*" | wl-copy
+  elif [[ -n "${DISPLAY:-}" ]] && command -v xclip >/dev/null 2>&1; then
+    printf '%s' "$*" | xclip -selection clipboard
+  elif [[ -n "${DISPLAY:-}" ]] && command -v xsel >/dev/null 2>&1; then
+    printf '%s' "$*" | xsel --clipboard --input
+  else
+    echo "No supported clipboard utility found." >&2
+    return 1
+  fi
+}
+
+if [[ $# == 0 ]]; then
+  input=$(cat)
+  if ! put_clipboard "$input"; then
+    cat
+  fi
+else
+  if ! put_clipboard "$*"; then
+    cat
+  fi
+fi
