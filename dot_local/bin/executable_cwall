@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if ! [[ -p "/tmp/fifo_image" ]]; then
+  mkfifo /tmp/fifo_image
+fi
+
+if ! command -v feh >/dev/null 2>&1; then
+  printf "command feh not found!\n"
+fi
+if ! command -v imv >/dev/null 2>&1; then
+  printf "command imv not found!\n"
+fi
+
+wall_preview() {
+  while read -r img; do
+    if [[ -e "$img" ]]; then
+      ln -sf "$img" "$HOME/Pictures/Wallpapers/images/default.png"
+      feh --bg-fill "$img"
+    fi
+  done </tmp/fifo_image
+
+}
+
+select_wallpaper() {
+  imv $HOME/Pictures/Wallpapers/images/* >/tmp/fifo_image
+}
+wall_preview &
+
+select_wallpaper
+
+rm -f /tmp/fifo_image

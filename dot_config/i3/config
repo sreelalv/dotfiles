@@ -28,8 +28,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork --image=$HOME/Pictures/Wallpapers/default.png
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork --image=$HOME/Pictures/Wallpapers/images/default.png
 
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
@@ -175,12 +174,14 @@ bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 # lockscreen for i3 
-bindsym Mod1+control+l exec i3lock --image=$HOME/Pictures/Wallpapers/default.png
-bindsym $mod+Shift+p exec --no-startup-id "pkill polybar || polybar >/dev/null 2>&1"
+bindsym Mod1+control+l exec bash -c 'i3lock --image=$HOME/Pictures/Wallpapers/images/default.png'
+bindsym $mod+Shift+p exec bash -c 'killall -9 polybar || polybar >/dev/null 2>&1'
+bindsym $mod+Shift+w exec ~/.local/bin/cwall
 
 bindsym $mod+y exec --no-startup-id $HOME/.local/bin/yt-mpv
 bindsym $mod+Shift+y exec --no-startup-id $HOME/.local/bin/yt-mpv -c
 bindsym $mod+t exec "bash -c 'if ! pgrep yazi ; then kitty --title yazi -e yazi ; fi'" ; workspace 4
+exec_always  --no-startup-id bash -c 'redshift -x && redshift -O 4000'
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -216,10 +217,10 @@ assign [class="Vivaldi"] $ws2
 assign [class="Virt-manager"] $ws9
 assign [class="Obsidian"] $ws10
 
-exec --no-startup-id polybar main
-exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/default.png
+exec_always --no-startup-id bash -c 'killall -9 polybar ;polybar main'
+exec_always --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/images/default.png
 exec --no-startup-id flatpak run com.vivaldi.Vivaldi
-exec --no-startup-id picom -b
+exec_always --no-startup-id bash -c 'killall -9 picom ;picom -b'
 #exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
 exec --no-startup-id kitty bash -c 'tmux new-session -A -s default'
 
