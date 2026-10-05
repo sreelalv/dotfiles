@@ -1,30 +1,27 @@
 #!/usr/bin/env bash
 
-yt-mpv() {
-  if [[ "$1" = "--comment" || "$1" = "-c" ]]; then
-    local mpv_entry
+comment=""
+if [[ "$1" = "--comment" || "$1" = "-c" ]]; then
+  mpv_entry
 
-    if ! mpv_entry="$(zenity --forms \
-      --title='mpv' \
-      --text='' \
-      --add-entry='Name')"; then
-      return
-    fi
-
-    IFS='|' read -r comment <<<"$mpv_entry"
+  if ! mpv_entry="$(zenity --forms \
+    --title='mpv' \
+    --text='' \
+    --add-entry='Name')"; then
+    exit
   fi
 
-  local url="$(getit)"
+  IFS='|' read -r comment <<<"$mpv_entry"
+fi
 
-  if [[ -z "$url" ]]; then
-    return
-  fi
+url=$(~/.local/bin/getit)
 
-  if [[ -n "$comment" ]]; then
-    printf "%s|%s\n" "$comment" "$url" >>"$HOME/.config/mpv/mpv_history"
-  fi
+if [[ -z "$url" ]]; then
+  exit
+fi
 
-  mpv "$url"
-}
+if [[ -n "$comment" ]]; then
+  printf "%s|%s\n" "$comment" "$url" >>"$HOME/.config/mpv/mpv_history"
+fi
 
-yt-mpv $@
+mpv "$url"

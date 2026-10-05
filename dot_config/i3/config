@@ -178,8 +178,8 @@ bindsym Mod1+control+l exec bash -c 'i3lock --image=$HOME/Pictures/Wallpapers/im
 bindsym $mod+Shift+p exec bash -c 'killall -9 polybar || polybar >/dev/null 2>&1'
 bindsym $mod+Shift+w exec ~/.local/bin/cwall
 
-bindsym $mod+y exec --no-startup-id $HOME/.local/bin/yt-mpv
-bindsym $mod+Shift+y exec --no-startup-id $HOME/.local/bin/yt-mpv -c
+bindsym $mod+y exec --no-startup-id "bash -c '~/.local/bin/yt-mpv'"
+bindsym $mod+Shift+y exec --no-startup-id "bash -c '~/.local/bin/yt-mpv -c'"
 bindsym $mod+t exec "bash -c 'if ! pgrep yazi ; then kitty --title yazi -e yazi ; fi'" ; workspace 4
 exec_always  --no-startup-id bash -c 'redshift -x && redshift -O 4000'
 
