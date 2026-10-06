@@ -50,7 +50,11 @@ install_package(){
             fi 
             ;;
         dnf)
-            sudo dnf install -y $package >/dev/null 2>&1 && status=1
+            if ! rpm -q "$package" >/dev/null 2>&1 ; then
+              sudo dnf install -y $package >/dev/null 2>&1 && status=1
+            else
+              status=1
+            fi
             ;;
         *)
             status=0
@@ -127,10 +131,13 @@ done
 
 {{ if or (eq .windowManager "hyprland") (eq .windowManager "i3")}}
     if command -v flatpak ; then 
-        flatpak install com.vivaldi.Vivaldi
+        flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     fi
 
-    sudo systemctl enable --now cronie
+    sudo systemctl enable --now cronie 2>/dev/null || \
+    sudo systemctl enable --now crond 2>/dev/null && \
+    printf "cronjob service started successful\n" || \
+    printf "Failed to Enable cron service\t Try manually"
 
     if ! crontab -l | grep ".local/bin/battery" >/dev/null 2>&1; then 
       cron_job="*/5 * * * * ~/.local/bin/battery"

@@ -212,21 +212,22 @@ bindsym $mod+r mode "resize"
 bindsym Mod1+Tab focus next
 bindsym Mod1+Shift+Tab focus next
 
-assign [class="firefox"] $ws3
-assign [class="Vivaldi"] $ws2
+assign [class="firefox"] $ws2
+assign [class="Vivaldi"] $ws3
+assign [class="Spotify"] $ws4
+assign [class="discord"] $ws4
 assign [class="Virt-manager"] $ws9
 assign [class="Obsidian"] $ws10
+for_window [title="[Yy]azi"] move to workspace 5
+for_window [class="mpv"] move to workspace 8
 
 exec_always --no-startup-id bash -c 'killall -9 polybar ;polybar main'
 exec_always --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/images/default.png
-exec --no-startup-id flatpak run com.vivaldi.Vivaldi
 exec_always --no-startup-id bash -c 'killall -9 picom ;picom -b'
 #exec --no-startup-id alacritty -e bash -c 'tmux new -s default'
 exec --no-startup-id kitty bash -c 'tmux new-session -A -s default'
 
 for_window [class="zenity"] focus
-for_window [title="[Yy]azi"] move to workspace 4
-for_window [class="mpv"] move to workspace 8
 
 default_border none
 default_floating_border none
