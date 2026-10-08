@@ -24,5 +24,6 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
 alias vim='nvim'
+alias cd='z'
 
 export EDITOR=nvim
