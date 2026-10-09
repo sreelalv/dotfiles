@@ -9,7 +9,7 @@ mpv() {
       else
         dir=$(realpath "$1")
       fi
-      file="$(find $dir -type f \( -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.avi' -o -iname '*.mov' -o -iname '*.webm' -o -iname '*.flv' -o -iname '*.wmv' -o -iname '*.m4v' -o -iname '*.mpeg' -o -iname '*.mpg' -o -iname '*.m3u' \) | fzf)"
+      file="$(find "$dir" -type f \( -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.avi' -o -iname '*.mov' -o -iname '*.webm' -o -iname '*.flv' -o -iname '*.wmv' -o -iname '*.m4v' -o -iname '*.mpeg' -o -iname '*.mpg' -o -iname '*.m3u' \) | fzf)"
     fi
   elif [[ "$1" = "-a" || "$1" = "all" || "$1" = "--all" ]]; then
     if [[ $(command -v locate) ]]; then
