@@ -18,7 +18,6 @@ mpv() {
   else
     if [[ -f "$*" ]]; then
       command mpv "$*"
-      exit
     fi
   fi
 

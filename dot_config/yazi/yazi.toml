@@ -1,7 +1,6 @@
 [opener]
-
 zathura = [
-    { run = 'zathura %s', orphan = true, for = "unix" },
+    { run = "zathura %s", orphan = true, for = "unix" },
 ]
 
 [open]

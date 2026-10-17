@@ -94,7 +94,7 @@ for package in "${packages[@]}" ; do
 done
 
 {{ if (ne .windowManager "none")}}
-    x86_64_packages=("alacritty" "brightnessctl" "cronie" "firefox" "ffmpeg" "feh" "flatpak" "grim" "imv" "kitty" "mpv" "rofi" "redshift" "slurp" "sshfs" "wl-clipboard" "xclip" "zenity")
+    x86_64_packages=("alacritty" "brightnessctl" "cronie" "firefox" "ffmpeg" "feh" "flatpak" "grim" "imv" "kitty" "mpv" "rofi" "redshift" "slurp" "sshfs" "wl-clipboard" "xclip" "zathura" "zathura-pdf-poppler" "zenity")
 
     for package in "${x86_64_packages[@]}" ; do 
         install_package $package
