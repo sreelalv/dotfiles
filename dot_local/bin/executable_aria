@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-__target_parser__() {
-  local tar="$1"
-  local output="$(echo $tar | cut -d'=' -f2)"
-  printf "%s" "$output"
-}
-
 ariadir() {
   local path="$HOME/.local/.aria_path"
   if [[ -n "$1" ]]; then
@@ -22,68 +16,72 @@ ariadir() {
     fi
   fi
 }
+aria_help() {
+  printf "aria <options> \n"
+  printf "OPTIONS\n"
+  printf "  -s <url>\t\t The source URL\n"
+  printf "  -o <file>\t\t The output file name\n"
+  printf "  -d <dir>\t\t Current download path \n"
+  printf "  -D <dir>\t\t Change the default download path\n"
+  printf "  -p \t\t\t View the default download path\n"
+}
+
 aria() {
-  local -a flags=("$@")
-  local full_args="${flags[@]}"
-  local dir=""
-  if [[ -f "$HOME/.local/.aria_path" ]]; then
-    read dir <"$HOME/.local/.aria_path"
-    dir="-d ${dir}"
-  else
-    local dir="-d $HOME/Downloads/aria/"
-  fi
+  local url
+  local output
+  local dir
 
-  local _aria_="aria2c -x 16 -s 16 -j 8"
-  local con="--continue=true"
-  local overwrite="--allow-overwrite"
-  local torrent="--enable-dht=true --bt-enable-lpd=true --bt-max-peers=50 --seed-time=0"
-  local message=""
-  local exit_flag=1
-
-  local input="${flags[0]}"
-  if [[ $input =~ torrent$ || $input =~ ^magnet ]]; then
-    _aria_="${_aria_} ${torrent}"
-  fi
-
-  for ((i = 1; i < "${#flags[@]}"; i++)); do
-    fg="${flags[i]}"
-    target=""
-    case $fg in
-    -d=*)
-      target=$(__target_parser__ "$fg")
-      [[ -d "$target" ]] && dir="-d $target"
+  while getopts ':s:o:d:D:ph' opts; do
+    case "$opts" in
+    s) url=$OPTARG ;;
+    o) output=$OPTARG ;;
+    d) dir=$OPTARG ;;
+    D) ariadir "$OPTARG" ;;
+    p) ariadir ;;
+    h)
+      aria_help
+      exit 0
       ;;
-    -m=*)
-      message=$(__target_parser__ "$fg")
+    :)
+      printf 'Error: option -%s requires an argument\n' "$OPTARG" >&2
+      exit 2
       ;;
-    -o | -over*)
-      _aria_="${_aria_} ${overwrite}"
-      ;;
-    -c | -cont*)
-      _aria_="${_aria_} ${con}"
-      ;;
-    -nx | --no-exit)
-      exit_flag=0
+    \?)
+      printf 'Error: option -%s is invalid\n' "$OPTARG" >&2
+      aria_help
+      exit 1
       ;;
     esac
   done
-  _aria_="${_aria_} ${dir}"
-  $_aria_ "$input"
-  local status="$?"
-  if [[ "$status" == 0 && -n "$message" ]]; then
-    notify-send "Download Complete" "$message"
+  shift $((OPTIND - 1))
+
+  local _url="$1"
+
+  local _aria_="aria2c -x 16 -s 16 -j 8"
+  local torrent="--enable-dht=true --bt-enable-lpd=true --bt-max-peers=50 --seed-time=0"
+
+  if [[ -z "$dir" ]]; then
+    if [[ -f "$HOME/.local/.aria_path" ]]; then
+      read dir <"$HOME/.local/.aria_path"
+      dir="-d ${dir}"
+    else
+      dir="-d $HOME/Downloads/aria/"
+    fi
+  else
+    dir="-d ${dir}"
   fi
-  if [[ $exit_flag == 1 ]]; then
-    exit "$status"
+
+  _aria_="${_aria_} ${dir}"
+
+  if [[ "$url" =~ torrent$ || "$url" =~ ^magnet ]]; then
+    _aria_="${_aria_} ${torrent}"
+  fi
+
+  if [[ -n "$url" ]]; then
+    $_aria_ "$url"
+  elif [[ -n "$_url" ]]; then
+    $_aria_ "$_url"
   fi
 }
 
-if [[ "$1" = "-d" || "$1" = "--dir" ]]; then
-  if [[ -d "$2" ]]; then
-    ariadir "$2"
-  else
-    ariadir
-  fi
-else
-  aria "$@"
-fi
+aria "$@"
