@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 mpv() {
   local file=""
   if [[ $# == 0 || -d "$1" ]]; then
@@ -18,6 +20,10 @@ mpv() {
   else
     if [[ -f "$*" ]]; then
       command mpv "$*"
+    elif [[ -d "$*" ]]; then
+      file="$(find '$*' -type f \( -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.avi' -o -iname '*.mov' -o -iname '*.webm' -o -iname '*.flv' -o -iname '*.wmv' -o -iname '*.m4v' -o -iname '*.mpeg' -o -iname '*.mpg' -o -iname '*.m3u' \) | fzf)"
+    else
+      file="$(find "$HOME" -type d -iname "*$**" | xargs -I {} find {} -type f \( -iname '*.mp4' -o -iname '*.mkv' -o -iname '*.avi' -o -iname '*.mov' -o -iname '*.webm' -o -iname '*.flv' -o -iname '*.wmv' -o -iname '*.m4v' -o -iname '*.mpeg' -o -iname '*.mpg' -o -iname '*.m3u' \) | fzf)"
     fi
   fi
 
