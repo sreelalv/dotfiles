@@ -213,6 +213,8 @@ bindsym Mod1+Tab focus next
 bindsym Mod1+Shift+Tab focus next
 
 assign [class="firefox"] $ws2
+assign [class="browser"] $ws2
+assign [class="[Bb]rave"] $ws2
 assign [class="Vivaldi"] $ws3
 assign [class="Spotify"] $ws4
 assign [class="discord"] $ws4
