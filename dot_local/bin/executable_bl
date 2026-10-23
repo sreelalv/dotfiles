@@ -1,138 +1,115 @@
 #!/usr/bin/env bash
 
-bl()(        #Bluetooth control 
-  if ! command -v  bluetoothctl >/dev/null 2>&1 ; then 
-    echo "bluetoothctl is not installed ! "
-    return
+bl() {
+  local cache="/tmp/bluetooth.devices" opt OPTIND=1
+
+  command -v bluetoothctl >/dev/null || {
+    echo "bluetoothctl is not installed!" >&2
+    return 1
+  }
+  systemctl --quiet is-active bluetooth || {
+    echo -e "Bluetooth service is not active\nPlease enable/install bluetooth" >&2
+    return 1
+  }
+
+  _bl_list() {
+    bluetoothctl devices | awk '{n=$1=""; print NR, $2, substr($0, index($0,$3))}' | tee "$cache"
+  }
+  _bl_mac() {
+    [[ -f $cache ]] || _bl_list >/dev/null
+    awk -v id="$1" '$1 == id {print $2}' "$cache"
+  }
+  _bl_need() {
+    local mac
+    mac=$(_bl_mac "$1")
+    [[ -n $mac ]] || {
+      echo "Unknown device ID: $1 (run bl -l)" >&2
+      return 1
+    }
+    echo "$mac"
+  }
+
+  usage() {
+    cat <<'EOF'
+Usage: bl [-i] [-s] [-l] [-c ID] [-C] [-d ID] [-r ID] [-R] [-e] [-D] [-h]
+
+  -i        bluetoothctl interactive
+  -s        Scan (5s) and list devices
+  -l        List known devices
+  -c <ID>   Connect (pairs/trusts if needed)
+  -C        Show connected devices
+  -d <ID>   Disconnect device
+  -r <ID>   Remove/forget device
+  -R        Remove/forget all devices
+  -e        Enable bluetooth (rfkill unblock)
+  -D        Disable bluetooth (rfkill block)
+  -h        Help
+EOF
+  }
+
+  [[ $# -eq 0 ]] && {
+    usage
+    return 0
+  }
+
+  if rfkill list bluetooth | grep -q 'Soft blocked: yes' && [[ $1 != -[ehiD] ]]; then
+    echo -e "Bluetooth is blocked\nbl -e  - to unblock" >&2
+    return 1
   fi
 
-  if ! systemctl --quiet is-active bluetooth ; then 
-    printf "Bluetooth is not available \nPlease enable/install bluetooth" 
-    return
-  fi
+  bluetoothctl show | grep -Eq 'PowerState: off|Powered: no' && bluetoothctl power on >/dev/null
 
-	if [[ "$(rfkill | grep bluetooth | awk '{print $4}' | grep blocked)" = "blocked" ]] ; then
-		if ! [[ "$1" = "enable" || "$1" = "-h" ||  "$1" = "--help" ||"$1" = "--help" || "$1" = "i" || "$1" = "interactive" ]] ; then 
-			printf "Bluetooth is blocked\n"
-			printf "bl enable - to unblock\n"
-			return
-		fi
-	fi
+  local mac
+  while getopts ':islc:Cd:r:ReDh' opt; do
+    case $opt in
+    i) bluetoothctl ;;
+    s)
+      bluetoothctl --timeout 5 scan on >/dev/null 2>&1
+      _bl_list
+      ;;
+    l) _bl_list ;;
+    c)
+      mac=$(_bl_need "$OPTARG") || return 1
+      bluetoothctl info "$mac" | grep -q 'Trusted: yes' ||
+        { bluetoothctl pair "$mac" && bluetoothctl trust "$mac"; } >/dev/null
+      if bluetoothctl connect "$mac" >/dev/null; then
+        echo "Connection successful"
+      else
+        echo "Connection failed" >&2
+        return 1
+      fi
+      ;;
+    C) bluetoothctl devices Connected ;;
+    d)
+      mac=$(_bl_need "$OPTARG") || return 1
+      echo "Disconnecting $mac..."
+      bluetoothctl disconnect "$mac" >/dev/null
+      ;;
+    r)
+      mac=$(_bl_need "$OPTARG") || return 1
+      echo "Removing $mac"
+      bluetoothctl remove "$mac" >/dev/null
+      ;;
+    R)
+      while read -r _ mac _; do
+        echo "Removing $mac"
+        bluetoothctl remove "$mac" >/dev/null
+      done < <(bluetoothctl devices)
+      : >"$cache"
+      ;;
+    e) rfkill unblock bluetooth ;;
+    D) rfkill block bluetooth ;;
+    h) usage ;;
+    :)
+      echo "Option -$OPTARG needs an argument" >&2
+      return 1
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+    esac
+  done
+}
 
-	if [[ "$(bluetoothctl show | grep PowerState | grep off)" ]] ; then 
-		quiet bluetoothctl power on
-	fi
-
-	local param1="$1"
-	local param2="$2"
-	local tmpfile="/tmp/tmp.bluetoothdevices"
-
-	if [[ ! -f "$tmpfile" ]] ; then 
-		touch "$tmpfile"
-		param1="*"
-	fi
-
-	if [[ "${param1}" =~ [0-9]$ ]] ; then 
-		param2="$param1"
-		param1="con"
-	fi 
-
-	declare -A bl_list 
-	while read -r  key value ; do 
-		bl_list["$key"]="$value"
-	done < <(awk '{print $1,$3}' "$tmpfile")
-
-	case $param1 in 
-		interactive | i )
-			bluetoothctl 
-			;;
-
-		scan )
-			((expect -c '
-				spawn bluetoothctl 
-				set timeout 0
-				expect "#"
-				send "scan on\r"
-				set timeout 5
-				expect "#"
-				send "exit\r"
-				' >/dev/null 2>&1)&& bl )
-				;;
-
-		connected )
-			for i in ${!bl_list[@]} ; do 
-				if [[ "$(bluetoothctl info ${bl_list["$i"]} | grep Connected | grep yes)" ]] ; then 
-					bluetoothctl devices | grep --colour=never "${bl_list["$i"]}" 
-				fi
-			done
-			;; 
-
-		con )
-
-			if [[ -z "$param2" ]] ; then 
-				echo "No device found" 
-			else
-				if [[ "$(bluetoothctl info ${bl_list[$param2]} | grep Trusted | awk '{print $2}')" == "no" ]] ;then
-					quiet bluetoothctl pair "${bl_list[$param2]}"
-					quiet bluetoothctl trust "${bl_list[$param2]}" 
-				fi
-				quiet bluetoothctl connect "${bl_list[$param2]}"
-				if [[ "$(bluetoothctl devices Connected | grep ${bl_list[$param2]}))" ]] ; then 
-					echo "Connection Successfull"
-				fi 
-			fi
-			;; 
-
-		dis | disconnect) 
-			if [[ -z $param2 ]] ; then 
-				quiet bluetoothctl disconnect 
-			else
-				echo "Disconnecting ${bl_list["$param2"]}..." 
-				quiet bluetoothctl disconnect ${bl_list["$param2"]}
-			fi
-			;;
-
-		rm | remove )
-			if [[ -z "$param2" ]] ; then 
-				for i in ${bl_list[@]} ; do 
-					echo "Removing $i"
-					quiet bluetoothctl remove "$i"
-				done
-			else
-				echo "R2 ${bl_list["$param2"]}"
-				quiet bluetoothctl remove "${bl_list["$param2"]}" 
-			fi
-			;; 
-
-		disable)
-			rfkill block bluetooth
-			;;
-
-		enable)
-			rfkill unblock bluetooth
-			;;
-
-		-h | --help )
-			printf "\t bl <i|interactive> - bluetoothctl interactive\n"
-			printf "\t bl \t\t- List available devices \n"
-			printf "\t bl scan \t- Scan for new devices\n"
-			printf "\t bl connected \t- Show connected devices\n"
-			printf "\t bl con <id> \t- Connect to device <id> \n"
-			printf "\t bl dis \t- Disconnect current device\n"
-			printf "\t bl dis <id> \t- Disconnected device <id> \n"
-			printf "\t bl rm <id> \t- Remove/Forget device <id> \n"
-			printf "\t bl rm \t\t- Remove/Forget devices recursively (all) \n"
-			printf "\t bl enable \t- Enable bluetooth (rfkill unblock bluetooth) \n"
-			printf "\t bl disable \t- Disable bluetooth (rfkill block bluetooth) \n" 
-			;;
-
-
-		* )
-			bluetoothctl devices | grep --colour=never Device | awk 'BEGIN{i=1}{print i" "$0 ;i++}' | tee  $tmpfile
-			;; 
-
-	esac
-	return 0
-)
 bl "$@"
-
