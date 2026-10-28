@@ -1,27 +1,25 @@
 #!/usr/bin/env bash
 
 comment=""
-if [[ "$1" = "--comment" || "$1" = "-c" ]]; then
-  mpv_entry
-
-  if ! mpv_entry="$(zenity --forms \
+mpv_entry() {
+  comment="$(zenity --forms \
     --title='mpv' \
     --text='' \
-    --add-entry='Name')"; then
-    exit
-  fi
+    --add-entry='Name')" || exit
+}
 
-  IFS='|' read -r comment <<<"$mpv_entry"
-fi
+while getopts "c" opts; do
+  case "$opts" in
+  c) mpv_entry ;;
+  \?) printf 'Error: option -%s is invalid\n' "$OPTARG" >&2 ;;
+  esac
+done
+shift $((OPTIND - 1))
 
 url=$(~/.local/bin/getit)
 
-if [[ -z "$url" ]]; then
-  exit
-fi
+[[ -z "$url" ]] && exit
 
-if [[ -n "$comment" ]]; then
-  printf "%s|%s\n" "$comment" "$url" >>"$HOME/.config/mpv/mpv_history"
-fi
+[[ -n "$comment" ]] && printf "%s|%s\n" "$comment" "$url" >>"$HOME/.config/mpv/mpv_history"
 
-mpv "$url"
+command mpv "$url"
