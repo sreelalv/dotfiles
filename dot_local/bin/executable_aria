@@ -1,21 +1,5 @@
 #!/usr/bin/env bash
 
-ariadir() {
-  local path="$HOME/.local/.aria_path"
-  if [[ -n "$1" ]]; then
-    if [[ $(command -v realpath) ]]; then
-      realpath $1 | tee $path
-    else
-      echo "Realpath : command not found"
-    fi
-  else
-    if [[ -f $path ]]; then
-      cat $HOME/.local/.aria_path
-    else
-      echo "$HOME/Downloads/aria"
-    fi
-  fi
-}
 aria_help() {
   cat <<'EOF'
 Usage: aria [-s URI|MAGNET|TORRENT] [-o FILE] [-d DIR] [-D DIR] [-p]
@@ -34,13 +18,46 @@ aria() {
   local output
   local dir
 
+  local _aria_="aria2c -x 16 -s 16 -j 8"
+  local torrent="--enable-dht=true --bt-enable-lpd=true --bt-max-peers=50 --seed-time=0"
+
+  _ariadir() {
+    local path="$HOME/.local/.aria_path"
+    if [[ -n "$1" ]]; then
+      if [[ $(command -v realpath) ]]; then
+        realpath $1 | tee $path
+      else
+        echo "Realpath : command not found"
+      fi
+    else
+      if [[ -f $path ]]; then
+        cat $path
+      else
+        echo "$HOME/Downloads/aria"
+      fi
+    fi
+  }
+
+  _dir() {
+    dir="$1"
+  }
+
+  _url() {
+    url="$1"
+  }
+
+  _output() {
+    local arg="$1"
+    _aria_="${_aria_} -o ${arg}"
+  }
+
   while getopts ':s:o:d:D:ph' opts; do
     case "$opts" in
-    s) url=$OPTARG ;;
-    o) output=$OPTARG ;;
-    d) dir=$OPTARG ;;
-    D) ariadir "$OPTARG" ;;
-    p) ariadir ;;
+    s) _url "$OPTARG" ;;
+    o) _output "$OPTARG" ;;
+    d) _dir "$OPTARG" ;;
+    D) _ariadir "$OPTARG" ;;
+    p) _ariadir ;;
     h)
       aria_help
       exit 0
@@ -58,10 +75,9 @@ aria() {
   done
   shift $((OPTIND - 1))
 
-  local _url="$1"
-
-  local _aria_="aria2c -x 16 -s 16 -j 8"
-  local torrent="--enable-dht=true --bt-enable-lpd=true --bt-max-peers=50 --seed-time=0"
+  if [[ "${url:=$1}" =~ torrent$ || "${url:=$1}" =~ ^magnet ]]; then
+    _aria_="${_aria_} ${torrent}"
+  fi
 
   if [[ -z "$dir" ]]; then
     if [[ -f "$HOME/.local/.aria_path" ]]; then
@@ -76,14 +92,8 @@ aria() {
 
   _aria_="${_aria_} ${dir}"
 
-  if [[ "$url" =~ torrent$ || "$url" =~ ^magnet ]]; then
-    _aria_="${_aria_} ${torrent}"
-  fi
-
   if [[ -n "$url" ]]; then
     $_aria_ "$url"
-  elif [[ -n "$_url" ]]; then
-    $_aria_ "$_url"
   fi
 }
 
