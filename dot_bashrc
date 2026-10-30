@@ -42,9 +42,11 @@ for file in $HOME/.local/bin/{prompt.sh,alias.sh,functions.sh}; do
 done
 unset file
 
-set -o vi 
+set -o vi
 
 eval "$(fzf --bash)"
 eval "$(zoxide init bash)"
 
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
 export PATH="$PATH:$HOME/.local/bin"
+fi
