@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 mpv() {
-  set -x
   _c_() {
     command mpv "$1"
   }
@@ -32,6 +31,4 @@ mpv() {
   shift $((OPTIND - 1))
 
   _d_ "$1"
-
-  set +x
 }
