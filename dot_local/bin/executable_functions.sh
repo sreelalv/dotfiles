@@ -22,7 +22,7 @@ mpv() {
 
   while getopts ":c:d:" opts; do
     case "$opts" in
-    c) _c_ "$OPTARG" ;;
+    c) _c_ "$OPTARG" && return ;;
     d) _d_ "$OPTARG" ;;
     :) printf "Error: Option -%s needs an argument" "$OPTARG" >&2 ;;
     \?) printf "Error: Option -%s in an invalid option" "$OPTARG" >&2 ;;
